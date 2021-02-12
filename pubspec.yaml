@@ -1,6 +1,6 @@
 name: state_set
 description: Collects State Objects by type into a Map object
-version: 0.2.0
+version: 1.0.0
 homepage: https://github.com/AndriousSolutions/set_state
 repository: https://github.com/AndriousSolutions/set_state
 

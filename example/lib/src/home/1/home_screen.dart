@@ -23,10 +23,11 @@ class HomeScreen extends StatefulWidget {
 
 /// The home page for this app.
 class _HomeScreenState extends State<HomeScreen> with StateSet {
-  _HomeScreenState(){
+  _HomeScreenState() {
     // ignore: avoid_print
     print('>>>>>>>>>>>>>>>>>>>>>>>> State object, _HomeScreenState, created.');
   }
+
   /// A mutable data field.
   int _counter = 0;
 

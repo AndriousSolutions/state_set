@@ -18,102 +18,157 @@ dependencies:
 ```
 For more information on this topic, read the article, [The importance of semantic versioning](https://medium.com/@xabaras/the-importance-of-semantic-versioning-9b78e8e59bba).
 
-## Learn By Example App
-Turn to the supplied example app to learn how to use this package.
-[![exampleBlocs](https://user-images.githubusercontent.com/32497443/102015078-e843c200-3d1e-11eb-9a6f-722ad2aa3c22.jpg)](https://github.com/AndriousSolutions/set_state/blob/81ada0221dd8f921d2832f6782cdc5d94960d92e/example/lib/main.dart#L257)
+### The StateSet Class
 
-## The Business side of the StateSet object
-Use the mixin, *StateBloc*, to readily access the underlying 'state object.' As you can see the class, _CounterBloc, below is the parent class of those above.
-[![counterBloc](https://user-images.githubusercontent.com/32497443/102015308-6fde0080-3d20-11eb-8ace-47579dd30410.jpg)](https://github.com/AndriousSolutions/set_state/blob/81ada0221dd8f921d2832f6782cdc5d94960d92e/example/lib/main.dart#L286)
-## By Example
-I'll use well-established examples to demonstrate the this package. We'll use the time-honored ‘startup app’ (the counter app) that’s presented to you when you create a new Flutter project. It’s a classic example. However, this time, we’re going to ramp it up a bit to fully demonstrate the little Dart library file presented here.
+*Find the right State object to call its* ***setState****()*
 
-You'll find a good computer application, in most instances, divides ‘the interface’ from everything else that makes up your app. Doing this alone makes for better progress during development and better scalability and maintenance down the road. When it comes to Flutter apps, there’s one common trait found in adaptive apps — the access to particular State objects. More specifically, access to their ever-important setState() function.
+In time, you'll get to know one important circumstance when working with Flutter --- you will regularly need to call a State object's **setState**() function. In other words, you'll need to repeatedly 'refresh' or 'rebuild' the app's interface and reflect any on-going changes, and that's done by calling a State object's **setState**() function. Doing so will have the Flutter framework call that State object's **build**() function. You're not to directly call the **build**() in the declarative programming framework that is Flutter. You're to call **setState**().
 
-Below, listed with the first half of the example app we’re using today, is a gif file demonstrating the functionality of that example app. Note, there’s not one, not two, but three State objects (Flutter pages) that make up this example app. In fact, there are four State objects in all — you’ll see that soon enough. Regardless, there are four ‘states’ being retained and managed. This an attempt to convey a typical Flutter app in the guise of a very simple example app, and so it’s a counter app with three counters. Their pages come one after the other. While running, you can go up and down the routing stack. The app is demonstrating the ‘state management’ involved.
-|  |  |
-| --- | --- |
-| ![main](https://user-images.githubusercontent.com/32497443/102795641-b2cc5380-4372-11eb-8768-ccdb17caea92.jpg) | ![Counter App](https://user-images.githubusercontent.com/32497443/102795074-e78bdb00-4371-11eb-9c5c-39bf1b62035c.gif) |
+In time, however, while working with Flutter, you'll also discover accessing a State object is easier said than done frankly. As it stands now with Flutter, State objects aren't so readily accessible. Frankly, whole frameworks like Provider and alike were created to make them readily accessible by some degree or another --- all just so to call their **setState**() function.
 
-## The Classic State
-In the gif above, you see we're going up through the three pages incrementing their individual counters along the way. There's a number of buttons offered so to navigate up and down the routing stack. As anticipated, returning back down the pages then up again, the counter on the third page is reset to zero. This makes sense. The app had retreated back down the routing stack, and the State object retaining the counter (the state) on the third page was terminated (its dispose() function called). Perfectly normal. However, notice the second page is keeping its counter value?? How is it doing that?!
+In my case, I've been using a Dart package that collects all the State objects of an app into a Map object all for ready access. Of course, I love it and use it all the time --- the fact I wrote the Dart package is beside the point. 
 
-Further note, on the second and third pages, you can increment the counters on the previous page! On the third page, for example, there are two buttons to increment both the second page and the home page. Well, that's neat. Now how is that done? Finally, pressing that 'Home Page New Key' found all the way up on page three results in the counter on the first page (the Home page) to be reset to zero! Now, what's going on there? Granted, this is such a rudimentary example, but it does demonstrate some fundamental aspects involved in the State Management of a typical Flutter app.
-> Use the setState() function to a particular State object.
+Again, a State object's **setState**() function will become all-important to you when developing in Flutter, and I wrote a mixin you can attach to any State class giving you easier yet safe access to that function. It allows you access to a State object anywhere in your app, and if you can't access it it's only because it's not there yet (not instantiated yet) and your attempt will return null. You should know your own app --- that's on you. Again, it compensates for such instances by 'failing gracefully' with null. I'd suggest testing for null when appropriate. In fact, I'll show you in this article circumstances where you should do that. The package is called, *state_set*, and has an extensive example app demonstrating its use. We're going to review that example app here in this article.
 
-Let's examine the first State object responsible for displaying a screen to the user. In this case, it's the 'Home page' greeting the user with the first counter. Below is a screenshot of that State with little red arrows highlighting points of interest. What do you see?
 
-First and foremost, you can see the example app is using a subclass of the State class called, SetState. What else do you see? Well, there's 'the separation of work' that I personally live by when developing code. More specifically, there's always a separate and dedicated class (_HomePageBloc in this case) that's responsible for the actual 'business logic' involved in the app while the build() function in some widget somewhere is responsible for the interface.
+[![](https://cdn-images-1.medium.com/max/2000/1*IFmrme1ikM_oyj7r4YrVIA.png)](https://andrious.medium.com/my-medium-9de112c2d85c)
 
-Further, there's the degree of abstraction as the API between these separate areas of responsibility. As an example, the actual 'counter' here in this app is concealed by the class property, data. There's also consistent practice of naming instance fields after the parameter used by the receiving Widget. As it happens, the Text widget's first parameter is named data. All this a consistent approach---a design pattern.
-![HomePageState](https://user-images.githubusercontent.com/32497443/102799105-a8f91f00-4377-11eb-94e2-1b8c2738cbf5.jpg)
+[Other Stores by Greg Perry](https://andrious.medium.com/my-medium-9de112c2d85c)
 
-The three Bloc classes (no direct relation to the BloC design pattern) you'll find in this example are indeed the 'Business Logic Components' for the app. Each has its own little bit of responsibility (their own little bit of 'state to manage'). They're also the app's event handlers---each response to particular events that may be triggered by the user or by the system (the phone) itself.
+### Going Home
 
-The screenshot below presents the first Bloc somewhat named after the State object it's to work with. It even explicitly takes in the type of that State object it works with. At a glance, you can see this Bloc class is for the home screen.
-![HomePageState](https://user-images.githubusercontent.com/32497443/102799437-2755c100-4378-11eb-9d88-9f4d0d8d6c83.jpg)
+The example app is demonstrated below. It's a very very simple example app. It's the ol' standby --- the startup counter app. The app you see when you create a new Flutter project. Well, this one is a little different. It's got three counters. In fact, there are three example apps in this Dart package for you to look through --- all with three counters. Today, we'll just look at one of them.
 
-Let's take a deep dive into the instantiation of all three Bloc classes. All three Blocs in this app take advantage of inheritance extending from the common parent class, _CounterBloc. After all, they all pretty much do the same thing and so that function is found in one parent class---working with an integer called, counter.
-Regardless, note the first Bloc class, _HomePageBloc, doesn't know the type of State object beforehand, and so that type is passed in as a generic type. While in the second Bloc class, _SecondPageBloc, the State type is known and is explicitly specified. Which approach to use, of course, depends on the circumstance. At least, you're free to use either. You have that option.
+Note, how a counter on the previous home screen is incremented even when we're currently on the second screen. In Flutter, that means a **setState**() function is being called somewhere. The Dart package and its class, *StateSet*, will allow access to the State object previously instantiated back on the home screen --- the very State object that built the home screen. That's huge! Shortly, you'll realize why.
 
-Further note, the second class utilizes a factory constructor, and that's how it retains its count even when you retreat back down the routing stack! In every Flutter app you write, returning to a previous page will remove a Page from the stack, and if it's represented by a StatefulWidget, that means the StatefulWidget's State object will be disposed of. Every time. Unless you do something about it.
+A screenshot of the second screen is also displayed below. The first arrow below points to the FloatingActionButton's **onPressed**() function calling that State object's own **onPressed**() function. Note, it's further wrapped in its own **setState**() function. Thus the **onPressed**() function increments the counter while the **setState**() then displays the incremented value. Again, as you may already know, it's the **setState**() that tells the Flutter framework to call the State object's **build**() function again and consequently rebuild the second screen again. You've seen this time and time again. Perfectly normal.
 
-![HomePageBloc](https://user-images.githubusercontent.com/32497443/102799942-caa6d600-4378-11eb-8a7d-0282df139e0d.jpg)
+However, it's the RaisedButton widget also there on the second screen that's the real interesting part. It too has a **onPressed**() function, and notice what's going on in that function. What you're seeing is the code that allows you to also increment the counter back on the home screen. Huge. The second arrow below points to the static function, **of**, from the StateSet class retrieving the State object for the StatefulWidget, *HomeScreen*, so to update the incrementation back on the home screen. See how that works? You're probably thinking, 'What's the big deal?' 
 
-You'll note, when it comes to the second page, the 'State Management' has been allocated to a separate class altogether and not left to the State object. Following the Singleton design pattern, the _SecondPageBloc class remains in resident memory for the life of the app. Thus keep its counter (its state) and is assigning a brand new State object to itself (the second arrow) whenever a user comes back to that page.
+[![](https://cdn-images-1.medium.com/max/2500/1*qUUv220agHa6dMHsXwKeUA.png)](https://github.com/AndriousSolutions/state_set/blob/208af24915e4f27516be73679bdb6fa417d8c994/example/lib/src/home/2/second_screen.dart#L62)
 
-Now, let's look at the third and final Bloc class, _ThirdPageBloc. Note that the instance field, state, is successfully overridden with a getter. THIS IS HUGE! Do you know why? It's huge you can successfully override a mutable instance field with an immutable getter! Since a getter is essentially 'instantiated' only when it's first used, you can provide the 'type of state', but you're not obligated to instantiate a reference to that State right then and there! You can wait. Possibly in some situations, the State is not to be instantiated at that point---It may not be available for some reason.
+![](https://cdn-images-1.medium.com/max/1000/1*dHxREox2m8QN6KCFLdMLJQ.gif)
 
-## _CounterBloc class
-We might as well take a look at that parent class to the Bloc's now. Again, it's an event handler. Such a class is required to respond to events. In this case, the most profound event is when a user taps on the plus sign to increment the counter. Thus, the most important capability of this class is to then notify the appropriate State object when it's completed responding to that event.
+[second_screen.dart](https://github.com/AndriousSolutions/state_set/blob/208af24915e4f27516be73679bdb6fa417d8c994/example/lib/src/home/2/second_screen.dart#L62)
 
-As you know, it does have access to the ever-important setState() function for a particular State object. It takes advantage of that access and even defines its own setState() function---for any other modules to then call to notify the app and reflect a change. Finally, it offers a corresponding dispose() function to be called in its State object's own dispose() function when the State object itself indeed terminates during the course of the app's lifecycle. It's all nice and compact. However, we could do better.
+### Show The Count
 
-![CounterBloc](https://user-images.githubusercontent.com/32497443/102807335-0eeba380-4384-11eb-8ea3-cfb44ddcbe68.jpg)
+Well, if that **of**() function is commented out (see below), tapping the 'Home Counter' button seemingly now has no effect since, returning to the home screen, you'll find its counter remains at zero. It does continue to increment, however--- its screen just needs to be updated. With that, the code below was further modified to instead update the home screen only when incrementing the second screen's counter. You can see that with the first arrow below. You see, you need the **setState**() to reflect any changes in your app's interface. With that, you will find in time working with Flutter, getting access to the appropriate State object is essential for the typical functionality you would want in your apps. Again, whole frameworks made to allow for this. Well, let's see if we can't narrow this capability down a bit.
 
-Note, such abilities, on the whole, should be present in any and all modules that are to work with a SetState object in this fashion. Such abilities should be readily available to any class you may define to contain the 'business logic' of an app. Such a circumstance would therefore be a good candidate for a mixin, no? A screenshot of that mixin is below.
+![](https://cdn-images-1.medium.com/max/2500/1*PNycX-hKbZhgiOjFxH2koA.png)
 
-![StateBloc](https://user-images.githubusercontent.com/32497443/102807426-3b9fbb00-4384-11eb-8bb8-2d5ca9a811ed.jpg)
+![](https://cdn-images-1.medium.com/max/1000/1*-oAP4Nv6caJEuvPegiPAAQ.gif)
 
-That parent class, *_CounterBloc*, has now been changed---focusing truly now on the one lone functional responsibility assigned to it in this particular app. When it increments its counter, it then notifies the rest of the app with the setState() function. It now takes in the mixin using the keyword, *with*, resulting in code generally being more modular. Further, as you see below, there's a higher cohesion in the resulting class.
+### What State Is It?
 
-![CounterBloc](https://user-images.githubusercontent.com/32497443/102807598-920cf980-4384-11eb-982e-8ffe1f1aa625.jpg)
+First, let's step back a bit and take a look at the **setState**() function. A screenshot of this function is displayed below on the left-hand side. As you know, it takes in a function with no arguments and is commonly described as a 'VoidCallback' function as it's not to return any result either. The first red arrow below shows where this passed function is then called. However note, if any result is returned it's actively cast as type dynamic so possibly anything, of any data type, can be returned. Although no result is expected, this is done so if there is a result, it can be tested by the assert function that follows. This function (present only during development) tests if the result is of type, *Future*. That's because a result of type, *Future*, is not good at this point sinceany 'incomplete' Future object present during the next scheduled 'rebuild' of the app's interface may bring about unpredictable side-effects --- and so the assert function will throw an error if an object of type Future was returned as a result.
 
-## Navigating The State
-Looking at the third page in the routing stack, we see it presents to the user five buttons. The first three buttons literally affect 'the state' in three separate regions in the app. The first button calls upon a provided Bloc object to respond to the event of incrementing that page's counter. The next three buttons involve the State objects from 'previously visited' areas of the app. Each is responsible for retaining their own state. Note, the names of the VoidCallback functions of the State objects, *homeState*, and *secondState*: onPressed. Should the fourth and last State object also have such a function?
+You see, working with a declarative programming language that is Flutter, likely in a few microseconds from then, the next scheduled 'rebuild' would occur. The Flutter engine will lay out and redraw the current interface again, and any 'dirty' (marked for rebuild) Elements and consequently their associated Widgets in the widget tree are rebuilt. In fact, if no Future object was returned, the last arrow below shows that State object's own associated Element (and consequently its StatefulWidget) is also marked as 'dirty' so it too is redrawn (and updated) with the next scheduled rebuild. See how that works? 
 
-|  |  |
-| --- | --- |
-|![floatingButton](https://user-images.githubusercontent.com/32497443/102807964-3b53ef80-4385-11eb-9f8d-92f18af98e6d.jpg) |![PageThree](https://user-images.githubusercontent.com/32497443/102808169-8968f300-4385-11eb-8f18-c6af5434355d.jpg) |
+And so, as you see in the next screenshot below, every time you tap and increment the counter, the associated Element object is 'marked', and consequently that State object's **build**() function is called with the next scheduled 'frame rebuild.' The class field, *_counter*, with its new integer value is passed to the Text widget again, and that Text widget is redrawn (i.e. its own **build**() function is called). With me so far?
 
-## Attain Your State
-Our last look at the third-page State object highlights the four approaches taken to supply the event handling and business logic, as it were, onto this last page. Most of them involve a static function from, in fact, the StateSet mixin.
+[![](https://cdn-images-1.medium.com/max/1500/1*BLpmt-yhGQY9uA2N-R-tbA.png)](https://github.com/flutter/flutter/blob/8874f21e79d7ec66d0457c7ab338348e31b17f1d/packages/flutter/lib/src/widgets/framework.dart#L1244)
 
-Note, all but the last State object instantiated is a specific type unique to this app. In other words, this class (this module) has to explicitly know the names of the other classes involved in this app to function. The last instance field, however, is assigned the foundational type, SetState.
+![](https://cdn-images-1.medium.com/max/2000/1*rMUPmby3_HFSEhYgSX2GSw.png)
 
-![PageThreeSource](https://user-images.githubusercontent.com/32497443/102808448-f4b2c500-4385-11eb-8f18-10b045322a87.jpg)
+[framework.dart](https://github.com/flutter/flutter/blob/8874f21e79d7ec66d0457c7ab338348e31b17f1d/packages/flutter/lib/src/widgets/framework.dart#L1244) and [home_screen.dart](https://github.com/AndriousSolutions/state_set/blob/208af24915e4f27516be73679bdb6fa417d8c994/example/lib/src/home/1/home_screen.dart#L45)
 
-Polymorphism is in play here. The first 'SetState' object (retrieved by SetState.root)can be anything---we don't know what from this vantage point. However, we do know it is a 'SetState' object. More so, we know it's a State object, and so we know we can call its setState() function from this class---from this vantage point. What it does when we call this object's setState() function, we can only guess. We'll look into what exactly happens next.
+### Declare Its State
 
-![setState](https://user-images.githubusercontent.com/32497443/102808619-2fb4f880-4386-11eb-888d-1c3e8f0184ed.jpg)
+Let's quickly note a characteristic of Flutter's declarative programming framework. See the first screenshot below? Being confident that incrementing the variable, *counter*, will not return a result of type Future, notice its expression is not even passed to the **setState**() function wrapped inside a VoidCallback function. Instead, the variable is incremented first and then the **setState**() function is called (passing along an empty VoidCallback function). Although it is good practice to enclose within a **setState**() function operations that change your app's 'state', you can see it's not mandatory. An empty function passed to the **setState**() function is a practice even found within the Flutter framework itself. Now the code below is of the 'original' counter app and is not found in the Dart package. It's just here to demonstrate something for us right now.
 
-## A New Home
-Remember, pressing that 'Home Page New Key' button resets the counter to zero on the Home page. Actually, what it does is re-create the State object itself displaying that page! Now does that sound right to you? After all, State objects are to stay in memory retaining their state, right? I mean, that's Flutter's whole State Management approach. This is 'the first' and founding State object for this app. It doesn't terminate until the app does, no? However, if you assign a new key to a State object's corresponding StatefulWidget, that State object is disposed of and a new one created. Let's walk through it and show you how this happens.
+Further note, working with a declarative programming language with its scheduled rebuilds, allows you to call **setState**() in any order inside a function involved in 'changing the state.' In the next screenshot below, the **setState**() function is called before the counter is even incremented. Perfectly fine.
 
-Let's look at the two screenshots below. The screenshot on the left-hand side below reveals when you press the 'Home Page New Key' button, the 'app state' State object calls its setState() function. That setState() function is displayed on the right-hand side includes assigning a new value to the instance field, _homeKey. That field, as you see in the build() function above, is passed as the key to the StatefulWidget, MyHomePage. Calling setState() will run the build() function once again, however this time, with a new key.
+![](https://cdn-images-1.medium.com/max/1500/1*dYgRNolMV0pCC_v1g313uw.png)
 
-Calling the setState() function from the State object, appStat---the fourth State object I spoke of, with its the StatefulWidget, _MyApp, being passed to the runApp() function, will cause its build() function to fire again. This means the named parameter, home, receives a StatefulWidget with a brand new key. In turn, this means that the StatefulWidget's createState() function is fired again and a new State object is created. One that calls its initState() and build() functions again.
+![](https://cdn-images-1.medium.com/max/1500/1*RmokXTRrLgqw0FQMFzJ7PA.png)
 
-|  |  |
-| --- | --- |
-| ![HomePageCounter](https://user-images.githubusercontent.com/32497443/102808953-c8e40f00-4386-11eb-96a1-575debd648b5.jpg) | ![MyAppState](https://user-images.githubusercontent.com/32497443/102809032-ed3feb80-4386-11eb-996a-6e8fe9153b91.jpg) |
+![](https://cdn-images-1.medium.com/max/500/1*chde-8ULgX1Wsj4pzgtbEg.gif)
 
-## Set Your State
-Let's finally take a look at the class, SetState, replacing the traditional State objects in the app. Being abstract, of course, you have to implement its **build**() function, but you still have access to the usual and useful properties found in a State object: mounted, context, and widget. You can see in the screenshot below, this State object adds itself to the collection of State objects used by your app. It removes itself from that collection when it itself terminates. Finally, as you see below, it has its ever-important static function, **of**. You're familiar with such functions in Flutter: Theme.of(), and Scaffold.of().
+### Obtain The State
 
-![SetState](https://user-images.githubusercontent.com/32497443/102809199-3132f080-4387-11eb-8925-ea441c80e041.jpg)
+Ok, let's get back to the topic at hand. When first learning Flutter, you may have assumed it would be relatively easy to obtain a reference to a StatefulWidget's seemingly crucial State object. However, by design, it isn't. For example, there isn't a publicly accessible class property in every StatefulWidget referencing its corresponding State object. It's referenced instead in a private class field called, ***_state,*** --- in a completely different class altogether.
 
-## Magic In The Mix
-You'll note the mixin, *StateSet*, utilized in the abstract class above. It is this mixin that stores the collection State objects. Further, looking at the mixin below, you now have a subclass of the State class allowing you to call the **setState**() function without complaint.
+For example, the Home Screen's StatefulWidget (see below) calls its **createState**() function to create its State object, *_HomeScreenState*. However, in truth, it's the StatefulWidget's StatefulElement object (see below) when instantiating that initiates the **createState**() function call. It's that 'Element' object that then stores a reference to the State object in a private class field called, ***_state***. Thus, theState object is not readily accessible. You soon find when working with Flutter, safely making State objects readily accessible becomes a very desirable functionality (again, whole frameworks were written), and here is yet another offered approach.
 
-![StateSet](https://user-images.githubusercontent.com/32497443/102809463-a7cfee00-4387-11eb-9c01-453820d87c7e.jpg)
+[![](https://cdn-images-1.medium.com/max/1500/1*ZzngQvsBYbe20L-cXGUAxg.png)](https://github.com/AndriousSolutions/state_set/blob/208af24915e4f27516be73679bdb6fa417d8c994/example/lib/src/home/1/home_screen.dart#L9)
+
+[![](https://cdn-images-1.medium.com/max/2000/1*GtwoFpPIzbOl_p6KOsCuOg.png)](https://github.com/flutter/flutter/blob/8874f21e79d7ec66d0457c7ab338348e31b17f1d/packages/flutter/lib/src/widgets/framework.dart#L4712)
+
+[home_screen.dart](https://github.com/AndriousSolutions/state_set/blob/208af24915e4f27516be73679bdb6fa417d8c994/example/lib/src/home/1/home_screen.dart#L9) and [framework.dart](https://github.com/flutter/flutter/blob/8874f21e79d7ec66d0457c7ab338348e31b17f1d/packages/flutter/lib/src/widgets/framework.dart#L4712)
+
+Again, this 'keeping the State object out of reach' in Flutter is by design. It's even suggested your own State objects also remain private and not readily accessible to outside agents in your app. Their code and content are often too important to be susceptible to outside and third-party modules. The code in State objects literally makes your app's interface after all, and in many cases, contains much of your app's business logic. Access to such code should of course be controlled.
+
+### Public vs Private
+
+True, you're certainly free to make your State object public (with no leading underscore). However, for example, there are few instances where you would want its **build**() function readily accessible to the outside world. Right?
+
+Of course, in your public State class, you could selectively make its properties 'library private' with leading underscores here and there, but would that not be more work? Again, in many cases, a lot of your 'business logic' either resides or is accessible within that class --- containing much if not all of your app's mutable data. With any software development, many undesirable side-effects can arise if you don't control the scope of your app's modules. A leading underscore at the start of a class name relieves you of all of that.
+
+### Control The State
+
+So how would you then access your State objects? A State object's corresponding StatefulWidget is usually readily accessible since, more often than not, it will not have an underscore at the start of its name. With that, it's ideally situated to control access to the State object it uses as it itself has to be defined in the very same Dart library file as its State object. Remember, its State object will have a leading underscore to its name. To demonstrate what I mean by all this, do you recall the very first screenshot in this article? It was where the Home Screen's StatefulWidget's **onPressed**() function is called to increment its counter even though we're currently residing in the second screen. It's back again below. We're calling custom functions found in the StatefulWidget itself --- which unbeknownst to the outside World is accessing functions in its corresponding State object.
+
+Can the second screen access the home screen? Yes! The home screen's StatefulWidget, *HomeScreen*, has no leading underscore. Check! Can the second screen increment the home screen's counter? Yes! It knows to call the home screen's 'increment counter function' called, *onPressed* because it too doesn't begin with an underscore. Check! The Home Screen's StatefulWidget has a clearly defined API to work with. You see, Flutter allows you to instantiate a Widget object, again and again, to access its inner workings without ever calling that Widget's **build**() function. Huge!
+
+[![](https://cdn-images-1.medium.com/max/2500/1*T_bvZ0fjZch-sdaRd_tN5g.png)](https://github.com/AndriousSolutions/state_set/blob/208af24915e4f27516be73679bdb6fa417d8c994/example/lib/src/home/2/second_screen.dart#L62)
+
+![](https://cdn-images-1.medium.com/max/1000/1*62bWQqfDaJ1K_O0v4i-Bgw.gif)
+
+[second_screen.dart](https://github.com/AndriousSolutions/state_set/blob/208af24915e4f27516be73679bdb6fa417d8c994/example/lib/src/home/2/second_screen.dart#L62)
+
+Of course, looking at the code presented above, you can see a more efficient approach would be to instead just call the **setState**() function within the Home Screen's **onPressed**() function --- as it's demonstrated below. However, being such a simple example app, I'm just demonstrating how the static function, ***of***, allows you to retrieve the State object of a known and currently running StatefulWidget and call its ever-important **setState**() function. You may not realize it now, but this one lone capability will prove a very powerful and very useful capability for you and your Flutter apps.
+
+![](https://cdn-images-1.medium.com/max/2000/1*IwHIilioMpyHIvTlvuGj6w.png)
+
+### Find Your State
+
+Let's now take a look at the StatefulWidget, *HomeScreen*, in the screenshot below. Note it uses a factory constructor to prevent multiple instances of this class. As you've already seen, this StatefulWidget is called in other screens so to access its API and not just display an interface. Flutter's declarative nature allows you to easily do this --- its **build**() function will not be called when you instantiate a Stateful or Stateless widget. You're not supplying it to another widget's **build**() function, and so it's perfectly acceptable. You instead are calling the StatefulWidget as a means to access its State object. It would be wasteful to have multiple instances in this case, and so the Singleton pattern is utilized. 
+
+With that, note the **onPressed**() function in the StatefulWidget, in turn, calls the corresponding State object's own **onPressed**() function using the static function, ***to***, from the class, *StateSet*. It's in the State object, where we finally see the actual incrementation involving a private integer field called, *_counter*. It's that static function, ***to***, that reliably retrieves the 'most recent' State object created by this StatefulWidget's **createState**() function. Now, I'll explain this.
+
+![](https://cdn-images-1.medium.com/max/1500/1*DEph05J4hjONOGGewHFiIA.png)
+
+![](https://cdn-images-1.medium.com/max/1500/1*06bpDjsp3B_k7r_P9OeuXg.png)
+
+Again, Flutter is a declarative programming platform. This means its widgets are repeatedly destroyed and rebuilt throughout the typical lifecycle of an app. Even State objects can be disposed of (destroyed) and recreated again and again in certain circumstances --- if and when a new Key value is passed to its corresponding StatefulWidget for example. Again, 'keeping the State object out of reach' in Flutter is by design. If you're not careful, you may access a 'disposed' State object when trying to fire its ever-important **setState**() function. However, the StateSet class keeps track of all this and only provides you the 'currently active' State objects at any point in time in your app.
+
+Calling StateSet's static function, ***to***, in the Home Screen's StatefulWidget ensures its corresponding State object is retrieved. Even then note the **?.** operator is used in the **onPressed**() function. This is in case, for some unbeknownst reason, the State object was not instantiated. Although, since we're are calling the static function right inside the StatefulWidget, *HomeScreen*, I'd suggest it would be highly unlikely to return null. In fact, I'll likely take that operator out of there in the Github repository copy. You won't find it when you try out the Dart package. Such an operator is however very prudent in other cases.
+
+### The State of the Widget
+
+On the third screen of the example app, there are two buttons that allow you to increment the counters on the Home Screen and on the Second Screen. A screenshot of these two buttons is displayed below. Again, highlighted with arrows below, the code merely demonstrates to you the means to retrieve the State object of a particular StatefulWidget. In this case, it's the static function, ***of***, from the StateSet class that is used. It's here by the way where the conditional member access operator (***?.***) would be more prudent because an external StatefulWidget may not be instantiated for some reason. If it returns null, there's no error --- the setState() function simply will not fire and no interface updated. It's on the programmer to figure out why there's no update.
+
+![](https://cdn-images-1.medium.com/max/2500/1*U_aexHZOTG6QK4wcWf_NzQ.png)
+
+![](https://cdn-images-1.medium.com/max/1000/1*pli3fbZXrmFZ4YisDcT2Qw.gif)
+
+### The Root Of It
+
+There's an additional static property available to you when using the StateSet class. It's called *root* and always returns 'the first' State object instantiated in your Flutter app. By Flutter's own design, the first State object instantiated in your app would be considered 'the root State object' as it's above all other any subsequent State objects instantiated in your Flutter app. As you're told, time and time again, a Flutter app is composed of a Widget tree --- with one lone Widget at the top. For many very simple apps, accessing 'the root' State object and calling its **setState**() function would be sufficient to 'refresh the interface' and update the whole app with its changes. That property will prove useful.
+
+In our example app, You can see this 'root' property is used when the Home Screen's counter is reset to zero. Pressing the button, *Reset Home*, on the third screen, you see in the screenshot below the 'root' State object (in this case, the State object, *_MyAppState*) is retrieved only to call its **setState**() function. As you know by now, calling that State object's **setState**() function will cause its accompanying **build**() function to be called again soon after. Now, why is that done, I wonder?
+
+![](https://cdn-images-1.medium.com/max/2500/1*VoW7vimyRVa0gLvaQ83mPA.png)
+
+![](https://cdn-images-1.medium.com/max/1000/1*q7yp0YxbMiPD-59F6GmJaw.gif)
+
+The screenshot below of the State object, *_MyAppState*, reveals that its **setState**() function has been 'tweaked' a little bit. In that function, a 'new key' is assigned its class field, *_homeKey*. Note, it's the very same class field passed to the Home Screen StatefulWidget, *HomeScreen,* highlighted by the first arrow below. You know what that means. 
+
+![](https://cdn-images-1.medium.com/max/2000/1*dS5CALbeFBZX8-Hu5gsxfQ.png)
+
+In Flutter, if a StatefulWidget is assigned a new key, its accompanying State object is destroyed and a new one created. Consequently, in this case, a new State object means a new counter. It doesn't matter, by the way, that the StatefulWidget has a factory constructor. The Flutter engine recognizes a new Key value has come about since the last frame rebuild, and it knows to destroy and rebuild the accompanying State object. And so in this case, with a new State object, there's a new counter defaulting to zero. 
+
+![](https://cdn-images-1.medium.com/max/2500/1*1X5S1XhONCFVSpyt1verog.png)
+
+![](https://cdn-images-1.medium.com/max/1000/1*n4Y2hWHodBxE4K7Ha5p86w.gif)
+
+### A State Map
+
+The three screenshots below are of the three State classes that make up this one example app. Each reveals how a State object is incorporated into the StateSet class for ready access. Each takes in the mixin, *StateSet*. That's it.
+
+![](https://cdn-images-1.medium.com/max/1000/1*7nXwE-JZ2zH4kKFBvkelng.png)
+
+![](https://cdn-images-1.medium.com/max/1000/1*HE9Uaq3aE8c6PqtkQ5-eEA.png)
+
+![](https://cdn-images-1.medium.com/max/1000/1*b5TYQGxa3H06EmbDPI-msA.png)

@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
   void onPressed() {
     final _HomeScreenState state = StateSet.to<_HomeScreenState>();
-    state?.onPressed();
+    state.onPressed();
   }
 
   @override
@@ -23,6 +23,10 @@ class HomeScreen extends StatefulWidget {
 
 /// The home page for this app.
 class _HomeScreenState extends State<HomeScreen> with StateSet {
+  _HomeScreenState(){
+    // ignore: avoid_print
+    print('>>>>>>>>>>>>>>>>>>>>>>>> State object, _HomeScreenState, created.');
+  }
   /// A mutable data field.
   int _counter = 0;
 

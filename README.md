@@ -1,5 +1,5 @@
 ### The StateSet Mixin
-*Find the right State object to call its **setState**()
+Find the right State object to call its **setState**().
 Collects State Objects by type into a Map object for reliable access across the app.
 ### Installing
 I like the version number suggested on the [Installing](https://pub.dev/packages/state_set/install) page.

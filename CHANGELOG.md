@@ -1,8 +1,9 @@
 
-## 1.0.0+2
+## 1.0.0+3
  February 13, 2021
 - Description in pubspec.yaml
 - Rename _SecondPageState to _SecondScreenState
+- Updated README.md file
 
 ## 1.0.0
  February 12, 2021

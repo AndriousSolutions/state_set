@@ -1,5 +1,5 @@
 
-## 1.0.0+5
+## 1.0.0+6
  February 13, 2021
 - Description in pubspec.yaml
 - Rename _SecondPageState to _SecondScreenState

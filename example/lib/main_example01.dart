@@ -299,7 +299,7 @@ class _SecondPageBloc<T extends State> extends _CounterBloc<T> {
 
 /// Retain a State object by knowing the type you're looking for.
 class _ThirdPageBloc<T extends State> extends _CounterBloc<T> {
-  /// POWERFUL: You can override the field with a getter.
+  /// POWERFUL: You can override the class field with a getter.
   /// As a getter, you don't have to instantiate until needed (and available).
   @override
   T get state => StateSet.to<T>();

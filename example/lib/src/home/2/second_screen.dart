@@ -19,15 +19,15 @@ class SecondScreen extends StatefulWidget {
   void onPressed() {
     /// Always retrieve the 'latest' State object
     /// If a new Key was supplied to the Widget, it's recreate the State object.
-    final _SecondPageState state = StateSet.to<_SecondPageState>();
+    final _SecondScreenState state = StateSet.to<_SecondScreenState>();
     state?.onPressed();
   }
 
   @override
-  State createState() => _SecondPageState();
+  State createState() => _SecondScreenState();
 }
 
-class _SecondPageState extends State<SecondScreen> with StateSet {
+class _SecondScreenState extends State<SecondScreen> with StateSet {
   /// A mutable data field.
   int _counter = 0;
 

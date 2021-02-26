@@ -1,7 +1,8 @@
 
-## 2.1.0
+## 2.1.0+2
  February 25, 2021
 - Introduced _SetStateInheritedWidget
+- flutter format .
 
 ## 2.0.0
  February 14, 2021

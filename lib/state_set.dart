@@ -103,7 +103,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// by calling setState() function of the 'root' StatSet State object.
   bool attachStateSet(BuildContext context) {
     assert(_childStateSet != null,
-    'Define a builder() function instead of build() function.');
+        'Define a builder() function instead of build() function.');
     final widget =
         context.dependOnInheritedWidgetOfExactType<_SetStateInheritedWidget>();
     return widget != null;

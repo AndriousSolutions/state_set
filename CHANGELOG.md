@@ -1,4 +1,12 @@
 
+## 2.1.0
+ February 25, 2021
+- Introduced _SetStateInheritedWidget
+
+## 2.0.0
+ February 14, 2021
+- StateBloc takes in Type of StatefulWidget and not State
+
 ## 1.0.0+7
  February 13, 2021
 - Description in pubspec.yaml

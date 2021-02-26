@@ -41,6 +41,24 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
     }
   }
 
+  static Widget _childStateSet;
+
+  /// Builds a [InheritedWidget].
+  ///
+  /// Passed an alredy created widget tree
+  /// so its setState() call will **only** rebuild
+  /// [InheritedWidget] and consequently any of its dependents,
+  @override
+  Widget build(BuildContext context) {
+    _childStateSet ??= builder(context);
+    return _SetStateInheritedWidget(child: _childStateSet);
+  }
+
+  /// Use this function instead of the build() function to make this the 'root' State.
+  Widget builder(BuildContext context) {
+    return Container();
+  }
+
   /// Remove objects from the static Maps if not already removed.
   /// add this function to the State object's dispose function instead
   @override
@@ -80,6 +98,36 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
 
   /// Return the specified type from this function.
   static Type _type<T>() => T;
+
+  /// Rebuilds the widget that calls this function
+  /// by calling setState() function of the 'root' StatSet State object.
+  bool attachStateSet(BuildContext context) {
+    assert(_childStateSet != null,
+    'Define a builder() function instead of build() function.');
+    final widget =
+        context.dependOnInheritedWidgetOfExactType<_SetStateInheritedWidget>();
+    return widget != null;
+  }
+
+  ///
+  static void refresh() => rebuild();
+
+  static void rebuild() {
+    assert(_childStateSet != null,
+        'Define builder() instead of build() function.');
+    return root?.setState(() {});
+  }
+}
+
+/// Provides the InheritedWidget
+class _SetStateInheritedWidget extends InheritedWidget {
+  const _SetStateInheritedWidget({Key key, Widget child})
+      : super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return oldWidget != this;
+  }
 }
 
 /// Implement so to serve as a Business Logic Component for a SetState object.

@@ -103,18 +103,25 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// by calling setState() function of the 'root' StatSet State object.
   bool attachStateSet(BuildContext context) {
     assert(_childStateSet != null,
-        'Define a builder() function instead of build() function.');
+        'attachStateSet(): Define a builder() function instead of build() function.');
     final widget =
         context.dependOnInheritedWidgetOfExactType<_SetStateInheritedWidget>();
     return widget != null;
   }
 
-  ///
+  /// Ahered to the Bloc syntax
+  static void notifyListeners() => rebuild();
+
+  /// Flutter framework function name.
+  static void notifyClients() => rebuild();
+
+  /// 'Refresh' the widget tree
   static void refresh() => rebuild();
 
+  /// Rebuild all the linked StateSet State objects.
   static void rebuild() {
     assert(_childStateSet != null,
-        'Define builder() instead of build() function.');
+        'rebuild(): Define builder() instead of build() function.');
     return root?.setState(() {});
   }
 }

@@ -1,4 +1,8 @@
 
+## 2.2.0
+ February 27, 2021
+- Introduce notifyListeners(), notifyClients()
+
 ## 2.1.0+2
  February 25, 2021
 - Introduced _SetStateInheritedWidget

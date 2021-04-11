@@ -1,4 +1,9 @@
 
+## 3.0.0
+ April 09, 2021
+- Null Safety
+- Introduces mixin, StateSetWidget
+
 ## 2.2.0
  February 27, 2021
 - Introduce notifyListeners(), notifyClients()

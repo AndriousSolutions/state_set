@@ -36,28 +36,24 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   void initState() {
     super.initState();
     _setStates.addAll({runtimeType: this});
-    if (widget != null) {
-      _stateWidgets.addAll({widget.runtimeType: runtimeType});
-    }
+    _stateWidgets.addAll({widget.runtimeType: runtimeType});
   }
 
-  static Widget _childStateSet;
+  static Widget? _childStateSet;
 
   /// Builds a [InheritedWidget].
   ///
-  /// Passed an alredy created widget tree
+  /// Passed an already created widget tree
   /// so its setState() call will **only** rebuild
   /// [InheritedWidget] and consequently any of its dependents,
   @override
   Widget build(BuildContext context) {
     _childStateSet ??= builder(context);
-    return _SetStateInheritedWidget(child: _childStateSet);
+    return _SetStateInheritedWidget(child: _childStateSet!);
   }
 
   /// Use this function instead of the build() function to make this the 'root' State.
-  Widget builder(BuildContext context) {
-    return Container();
-  }
+  Widget builder(BuildContext context) => Container();
 
   /// Remove objects from the static Maps if not already removed.
   /// add this function to the State object's dispose function instead
@@ -70,7 +66,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
       final state = _setStates.remove(runtimeType);
       remove = state != null;
       if (remove) {
-        _stateWidgets.remove(state.widget?.runtimeType);
+        _stateWidgets.remove(state.widget.runtimeType);
       }
     }
     super.dispose();
@@ -78,22 +74,51 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
 
   /// Retrieve the State object by its StatefulWidget
   /// Returns null if not found
-  static State of<T extends StatefulWidget>() {
+  static State? stateOf<T extends StatefulWidget>() {
     final stateType = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
-    return _stateWidgets.isEmpty ? null : _setStates[stateType];
+    State? state;
+    if (_setStates.isEmpty || stateType == null) {
+      state = null;
+    } else {
+      state = _setStates[stateType];
+    }
+    return state;
+  }
+
+  /// Retrieve the type of State object by its StatefulWidget
+  /// Returns null if not found
+  static U? of<T extends StatefulWidget, U extends State>() {
+    final stateType = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
+    State? state;
+    if (_setStates.isEmpty || stateType == null) {
+      state = null;
+    } else {
+      state = _setStates[stateType];
+    }
+    // ignore: avoid_as
+    return state == null ? null : state as U;
   }
 
   /// Retrieve the State object by type
   /// Returns null if not found
-  static State to<T extends State>() =>
-      _setStates.isEmpty ? null : _setStates[_type<T>()];
+  static T? to<T extends State>() {
+    State? state;
+    if (_setStates.isEmpty) {
+      state = null;
+    } else {
+      state = _setStates[_type<T>()];
+    }
+    // ignore: avoid_as
+    return state == null ? null : state as T;
+  }
 
   /// Retrieve the first StateSet object
-  static StateSet get root =>
-      _setStates.isEmpty ? null : _setStates.values.first;
+  static StateSet? get root =>
+      // ignore: avoid_as
+      _setStates.isEmpty ? null : _setStates.values.first as StateSet?;
 
   /// Retrieve the latest context (i.e. the last State object's context)
-  static BuildContext get lastContext =>
+  static BuildContext? get lastContext =>
       _setStates.isEmpty ? null : _setStates.values.last.context;
 
   /// Return the specified type from this function.
@@ -128,7 +153,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
 
 /// Provides the InheritedWidget
 class _SetStateInheritedWidget extends InheritedWidget {
-  const _SetStateInheritedWidget({Key key, Widget child})
+  const _SetStateInheritedWidget({Key? key, required Widget child})
       : super(key: key, child: child);
 
   @override
@@ -141,11 +166,12 @@ class _SetStateInheritedWidget extends InheritedWidget {
 class StateBLoC<T extends State> {
   StateBLoC() {
     // Note, this is in case State object is available at this time.
+    // ignore: avoid_as
     state = StateSet.to<T>();
   }
 
   /// The Subclass should supply the appropriate SetState object
-  T state;
+  T? state;
 
   /// Not necessary. May lead to confusion
   // /// Explicitly assign a State object but only if 'state' is null
@@ -165,6 +191,7 @@ class StateBLoC<T extends State> {
   /// Supply the State object to this BloC object.
   @mustCallSuper
   void initState() {
+    // ignore: avoid_as
     state = StateSet.to<T>();
   }
 
@@ -173,5 +200,38 @@ class StateBLoC<T extends State> {
   @mustCallSuper
   void dispose() {
     state = null;
+  }
+}
+
+mixin StateSetWidget on StatefulWidget {
+  //
+  final List<State?> _stateSet = [];
+
+  // ignore: avoid_as
+  T? stateOf<T extends State>() =>
+      // ignore: avoid_as
+      _stateSet.isEmpty ? null : _stateSet[0] as T?;
+
+  /// Calls this in the State object's initState() function.
+  void initState() {}
+
+  /// Call this in the State object's dispose() function, widget.dispose();
+  void dispose() {
+    removeState();
+  }
+
+  /// Record the State object to its StatefulWidget using widget.withState(this);
+  void withState(State state) {
+    // Don't add more than one.
+    if (_stateSet.isEmpty) {
+      _stateSet.add(state);
+    }
+  }
+
+  /// Call dispose() instead but use in extraordinary situations.
+  void removeState() {
+    if (_stateSet.isNotEmpty) {
+      _stateSet.removeLast();
+    }
   }
 }

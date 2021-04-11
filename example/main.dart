@@ -6,7 +6,7 @@ void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
   //
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> with StateSet {
 
 class MyHomePage extends StatefulWidget {
   //
-  const MyHomePage({Key key}) : super(key: key);
+  const MyHomePage({Key? key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> with StateSet {
     /// but you do have the type.
     bloc = _CounterBloc<_MyHomePageState>();
   }
-  _CounterBloc bloc;
+  late _CounterBloc bloc;
 
   @override
   void initState() {
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> with StateSet {
           child: const Icon(Icons.add),
         ),
         persistentFooterButtons: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.push(
                   context,
@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> with StateSet {
 /// The second page displayed in this app.
 class _SecondPage extends StatefulWidget {
   //
-  const _SecondPage({Key key}) : super(key: key);
+  const _SecondPage({Key? key}) : super(key: key);
 
   /// Alternatively, you can use the 'of' function and search by StatefulWidget.
 //   _SecondPage({Key key}) : homeState = StateSet.of<MyHomePage>(), super(key: key);
@@ -127,8 +127,8 @@ class _SecondPageState extends State<_SecondPage> with StateSet {
   _SecondPageState()
       : homeState = StateSet.to<_MyHomePageState>(),
         super();
-  _SecondPageBloc bloc;
-  _MyHomePageState homeState;
+  late _SecondPageBloc bloc;
+  _MyHomePageState? homeState;
 
   @override
   void initState() {
@@ -170,11 +170,11 @@ class _SecondPageState extends State<_SecondPage> with StateSet {
           child: const Icon(Icons.add),
         ),
         persistentFooterButtons: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             onPressed: homeState?.onPressed,
             child: const Text('Home Page Counter'),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
@@ -182,7 +182,7 @@ class _SecondPageState extends State<_SecondPage> with StateSet {
               'Home Page',
             ),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.push(
                   context,
@@ -198,7 +198,7 @@ class _SecondPageState extends State<_SecondPage> with StateSet {
 }
 
 class _ThirdPage extends StatefulWidget {
-  const _ThirdPage({Key key}) : super(key: key);
+  const _ThirdPage({Key? key}) : super(key: key);
 
   @override
   _ThirdPageState createState() => _ThirdPageState();
@@ -217,10 +217,10 @@ class _ThirdPageState extends State<_ThirdPage> with StateSet {
     // Retrieve the very 'first' State object!
     appState = StateSet.root;
   }
-  _SecondPageState secondState;
-  _ThirdPageBloc bloc;
-  _MyHomePageState homeState;
-  StateSet appState;
+  _SecondPageState? secondState;
+  late _ThirdPageBloc bloc;
+  _MyHomePageState? homeState;
+  StateSet? appState;
 
   @override
   void initState() {
@@ -263,27 +263,27 @@ class _ThirdPageState extends State<_ThirdPage> with StateSet {
           child: const Icon(Icons.add),
         ),
         persistentFooterButtons: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             onPressed: homeState?.onPressed,
             child: const Text('Home Page Counter'),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: secondState?.onPressed,
             child: const Text('Second Page Counter'),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
               appState?.setState(() {});
             },
             child: const Text('Home Page New Key'),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.popUntil(context, ModalRoute.withName('/'));
             },
             child: const Text('Home Page'),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
@@ -302,7 +302,7 @@ class _ThirdPageBloc<T extends State> extends _CounterBloc<T> {
   /// POWERFUL: You can override the class field with a getter.
   /// As a getter, you don't have to instantiate until needed (and available).
   @override
-  T get state => StateSet.to<T>();
+  T? get state => StateSet.to<T>();
 }
 
 class _CounterBloc<T extends State> extends StateBLoC<T> {

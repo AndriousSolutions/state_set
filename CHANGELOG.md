@@ -1,4 +1,8 @@
 
+## 3.0.1
+ June 23, 2021
+- Deprecated StateSetWidget. Proven insufficient.
+
 ## 3.0.0
  April 09, 2021
 - Null Safety

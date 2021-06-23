@@ -134,7 +134,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
     return widget != null;
   }
 
-  /// Ahered to the Bloc syntax
+  /// Adhered to the Bloc syntax
   static void notifyListeners() => rebuild();
 
   /// Flutter framework function name.
@@ -203,14 +203,21 @@ class StateBLoC<T extends State> {
   }
 }
 
+@Deprecated('Abandoned: May lead to a memory leak.')
 mixin StateSetWidget on StatefulWidget {
   //
   final List<State?> _stateSet = [];
 
+  /// Yes, you're free to store 'any' State object you like.
+  /// However, that will be useless to you, it must be of type, T.
   // ignore: avoid_as
-  T? stateOf<T extends State>() =>
-      // ignore: avoid_as
-      _stateSet.isEmpty ? null : _stateSet[0] as T?;
+  T? stateOf<T extends State>() {
+    // Any 'invalid' State object will be removed.
+    if (_stateSet.isNotEmpty && _stateSet[0] is! T) {
+      _stateSet.removeLast();
+    }
+    return _stateSet.isEmpty ? null : _stateSet[0] as T;
+  }
 
   /// Calls this in the State object's initState() function.
   void initState() {}

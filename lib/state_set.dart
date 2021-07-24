@@ -21,13 +21,45 @@ library state_set;
 
 import 'package:flutter/material.dart';
 
+extension StateMapStatefulWidgetExtension on StatefulWidget {
+  //
+  T? stateAs<T extends State>() {
+    T? state;
+    try {
+      // Try in case its a bad cast
+      state = StateSet.stateIn(this) as T;
+    } catch (e) {
+      state = null;
+    }
+    return state;
+  }
+
+  State? get state => StateSet.stateIn(this);
+
+  bool setState(VoidCallback fn) => StateSet.setStateOf(this, fn);
+
+  bool refresh() => StateSet.refreshState(this);
+
+  bool rebuild() => refresh();
+
+  bool notifyListeners() => refresh();
+}
+
+/// Does this work?
+extension StateMapStateExtension on State {
+  static State? of(StatefulWidget widget) => StateSet.stateIn(widget);
+}
+
 /// Manages the collection of State objects extended by the SetState class
 mixin StateSet<T extends StatefulWidget> on State<T> {
-  /// The static map of StateSet objects.
-  static final Map<Type, State> _setStates = {};
+  /// The static map of StateSet objects by Type.
+  static final Map<Type, StateSet> _setStates = {};
 
   /// The static map of StatefulWidget objects.
   static final Map<Type, Type> _stateWidgets = {};
+
+  /// The static map of StateSet objects by StatefulWidget.
+  static final Map<StatefulWidget, StateSet> _statefulStates = {};
 
   /// Adds State object to a static map
   /// Adds StatefulWidget to a static map
@@ -37,6 +69,15 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
     super.initState();
     _setStates.addAll({runtimeType: this});
     _stateWidgets.addAll({widget.runtimeType: runtimeType});
+    _statefulStates[widget] = this;
+  }
+
+  /// Switch out the old StatefulWidget object with the new one.
+  @override
+  void didUpdateWidget(covariant T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _statefulStates.removeWhere((key, value) => key == oldWidget);
+    _statefulStates[widget] = this;
   }
 
   static Widget? _childStateSet;
@@ -52,7 +93,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
     return _SetStateInheritedWidget(child: _childStateSet!);
   }
 
-  /// Use this function instead of the build() function to make this the 'root' State.
+  /// Override this function instead of the build() function to make this the 'root' State.
   Widget builder(BuildContext context) => Container();
 
   /// Remove objects from the static Maps if not already removed.
@@ -69,14 +110,15 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
         _stateWidgets.remove(state.widget.runtimeType);
       }
     }
+    _statefulStates.removeWhere((key, value) => value == this);
     super.dispose();
   }
 
   /// Retrieve the State object by its StatefulWidget
   /// Returns null if not found
-  static State? stateOf<T extends StatefulWidget>() {
+  static StateSet? stateOf<T extends StatefulWidget>() {
     final stateType = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
-    State? state;
+    StateSet? state;
     if (_setStates.isEmpty || stateType == null) {
       state = null;
     } else {
@@ -89,7 +131,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// Returns null if not found
   static U? of<T extends StatefulWidget, U extends State>() {
     final stateType = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
-    State? state;
+    StateSet? state;
     if (_setStates.isEmpty || stateType == null) {
       state = null;
     } else {
@@ -102,7 +144,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// Retrieve the State object by type
   /// Returns null if not found
   static T? to<T extends State>() {
-    State? state;
+    StateSet? state;
     if (_setStates.isEmpty) {
       state = null;
     } else {
@@ -115,7 +157,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// Retrieve the first StateSet object
   static StateSet? get root =>
       // ignore: avoid_as
-      _setStates.isEmpty ? null : _setStates.values.first as StateSet?;
+      _setStates.isEmpty ? null : _setStates.values.first;
 
   /// Retrieve the latest context (i.e. the last State object's context)
   static BuildContext? get lastContext =>
@@ -123,6 +165,42 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
 
   /// Return the specified type from this function.
   static Type _type<T>() => T;
+
+  /// Return the State object used by the specified StatefulWidget object.
+  static StateSet? stateIn(StatefulWidget? widget) =>
+      widget == null ? null : _statefulStates[widget];
+
+  /// Calls the setState() of the State objet from the specified StatefulWidget
+  /// passing the specified function.
+  /// Return true if successful
+  static bool setStateOf(StatefulWidget? widget, VoidCallback? fn) {
+    bool set;
+
+    final state = stateIn(widget);
+
+    set = state != null;
+
+    if (set) {
+      set = state.mounted;
+    }
+
+    if (set) {
+      set = fn != null;
+    }
+
+    if (set) {
+      state!.setState(fn!);
+    }
+    return set;
+  }
+
+  /// Call setState() from the State object from the specified StatefulWidget
+  /// Return true if successful
+  static bool refreshState(StatefulWidget? widget) => setStateOf(widget, () {});
+
+  /// Call setState() from the State object from the specified StatefulWidget
+  /// Return true if successful
+  static bool rebuildState(StatefulWidget? widget) => setStateOf(widget, () {});
 
   /// Rebuilds the widget that calls this function
   /// by calling setState() function of the 'root' StatSet State object.
@@ -143,7 +221,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// 'Refresh' the widget tree
   static void refresh() => rebuild();
 
-  /// Rebuild all the linked StateSet State objects.
+  /// Rebuild widget tree using the 'first' StateSet State objects.
   static void rebuild() {
     assert(_childStateSet != null,
         'rebuild(): Define builder() instead of build() function.');
@@ -166,23 +244,11 @@ class _SetStateInheritedWidget extends InheritedWidget {
 class StateBLoC<T extends State> {
   StateBLoC() {
     // Note, this is in case State object is available at this time.
-    // ignore: avoid_as
     state = StateSet.to<T>();
   }
 
   /// The Subclass should supply the appropriate SetState object
   T? state;
-
-  /// Not necessary. May lead to confusion
-  // /// Explicitly assign a State object but only if 'state' is null
-  // bool assignState() {
-  //   var assigned = state == null;
-  //   if (assigned) {
-  //     state = StateSet.to<T>();
-  //     assigned = state != null;
-  //   }
-  //   return assigned;
-  // }
 
   /// Call your State object.
   // ignore: invalid_use_of_protected_member
@@ -191,7 +257,6 @@ class StateBLoC<T extends State> {
   /// Supply the State object to this BloC object.
   @mustCallSuper
   void initState() {
-    // ignore: avoid_as
     state = StateSet.to<T>();
   }
 
@@ -200,45 +265,5 @@ class StateBLoC<T extends State> {
   @mustCallSuper
   void dispose() {
     state = null;
-  }
-}
-
-@Deprecated('Abandoned: May lead to a memory leak.')
-mixin StateSetWidget on StatefulWidget {
-  //
-  final List<State?> _stateSet = [];
-
-  /// Yes, you're free to store 'any' State object you like.
-  /// However, that will be useless to you, it must be of type, T.
-  // ignore: avoid_as
-  T? stateOf<T extends State>() {
-    // Any 'invalid' State object will be removed.
-    if (_stateSet.isNotEmpty && _stateSet[0] is! T) {
-      _stateSet.removeLast();
-    }
-    return _stateSet.isEmpty ? null : _stateSet[0] as T;
-  }
-
-  /// Calls this in the State object's initState() function.
-  void initState() {}
-
-  /// Call this in the State object's dispose() function, widget.dispose();
-  void dispose() {
-    removeState();
-  }
-
-  /// Record the State object to its StatefulWidget using widget.withState(this);
-  void withState(State state) {
-    // Don't add more than one.
-    if (_stateSet.isEmpty) {
-      _stateSet.add(state);
-    }
-  }
-
-  /// Call dispose() instead but use in extraordinary situations.
-  void removeState() {
-    if (_stateSet.isNotEmpty) {
-      _stateSet.removeLast();
-    }
   }
 }

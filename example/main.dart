@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'package:state_set/state_set.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(const MainApp());
 
-class MyApp extends StatefulWidget {
-  //
-  const MyApp({Key? key}) : super(key: key);
+class MainApp extends StatefulWidget {
+  const MainApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State createState() => _MainAppState();
 }
 
-class _MyAppState extends State<MyApp> with StateSet {
+class _MainAppState extends State<MainApp> with StateSet {
   /// Key identifies the widget. New key? New widget!
   /// Demonstrates how to explicitly 're-create' a State object
   Key _homeKey = UniqueKey();
@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> with StateSet {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: MyHomePage(key: _homeKey),
+        home: Page1(key: _homeKey),
       );
 
   @override
@@ -33,286 +33,331 @@ class _MyAppState extends State<MyApp> with StateSet {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  //
-  const MyHomePage({Key? key}) : super(key: key);
+/// The first page displayed in this app.
+class Page1 extends StatefulWidget {
+  const Page1({Key? key}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State createState() => _Page1State();
+
+  void onPressed() {
+    /// You'll find these three return null if called by Page1().onPressed()
+    var state = this.stateAs<_Page1State>();
+    state = this.state as _Page1State?;
+    state = StateSet.stateIn(this) as _Page1State?;
+
+    state = StateSet.stateOf<Page1>() as _Page1State?;
+    state = StateSet.of<Page1, _Page1State>();
+    state = StateSet.to<_Page1State>();
+
+    // ignore: invalid_use_of_protected_member
+    state?.setState(() {
+      state!.count++;
+    });
+  }
 }
 
-/// The home page for this app.
-class _MyHomePageState extends State<MyHomePage> with StateSet {
+class _Page1State extends State<Page1> with StateSet {
   //
-  _MyHomePageState() : super() {
-    /// Explicitly provide the 'type' of its State object.
-    /// We're in the Stat object's constructor and so it's not ready yet
-    /// but you do have the type.
-    bloc = _CounterBloc<_MyHomePageState>();
-  }
-  late _CounterBloc bloc;
+  int count = 0;
 
   @override
-  void initState() {
-    super.initState();
-
-    /// Supply the State object to the BLoC
-    /// Now both the State object and its widget is ready at this point.
-    bloc.initState();
-  }
-
-  @override
-  void dispose() {
-    // You should clean up after yourself.
-    bloc.dispose();
-    super.dispose();
-  }
-
-  /// Supply a means to access its bloc
-  void onPressed() => bloc.onPressed();
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Home Page'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'You have pushed the button this many times:',
-              ),
-              Text(
-                '${bloc.data}',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: onPressed,
-          child: const Icon(Icons.add),
-        ),
-        persistentFooterButtons: <Widget>[
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                      builder: (BuildContext context) => const _SecondPage()));
-            },
-            child: const Text(
-              'Second Page',
-            ),
-          ),
-        ],
+  Widget build(BuildContext _) => buildPage1(
+        count: count,
+        counter: widget.onPressed,
       );
 }
 
 /// The second page displayed in this app.
-class _SecondPage extends StatefulWidget {
-  //
-  const _SecondPage({Key? key}) : super(key: key);
-
-  /// Alternatively, you can use the 'of' function and search by StatefulWidget.
-//   _SecondPage({Key key}) : homeState = StateSet.of<MyHomePage>(), super(key: key);
-//   final _MyHomePageState homeState;
+class Page2 extends StatefulWidget {
+  const Page2({Key? key}) : super(key: key);
 
   @override
-  State createState() => _SecondPageState();
+  State createState() => _Page2State();
+
+  void onPressed() {
+    /// You'll find these three return null if called by Page2().onPressed()
+    var state = this.stateAs<_Page2State>();
+    state = this.state as _Page2State?;
+    state = StateSet.stateIn(this) as _Page2State?;
+
+    state = StateSet.stateOf<Page2>() as _Page2State?;
+    state = StateSet.of<Page2, _Page2State>();
+    state = StateSet.to<_Page2State>();
+
+    state?.count++;
+
+    // ignore: invalid_use_of_protected_member
+    state?.setState(() {});
+  }
 }
 
-class _SecondPageState extends State<_SecondPage> with StateSet {
-  /// _MyHomePageState has been instantiated and so is available at this point.
-  _SecondPageState()
-      : homeState = StateSet.to<_MyHomePageState>(),
-        super();
-  late _SecondPageBloc bloc;
-  _MyHomePageState? homeState;
+class _Page2State extends State<Page2> with StateSet {
+  //
+  int count = 0;
 
   @override
-  void initState() {
-    super.initState();
-
-    /// Instead of bloc.initState(), you can just instantiate in initState().
-    /// Supply the State object to the BLoC
-    bloc = _SecondPageBloc<_SecondPageState>();
-  }
-
-  @override
-  void dispose() {
-    // You should clean up after yourself.
-    bloc.dispose();
-    homeState = null;
-    super.dispose();
-  }
-
-  // Supply a means to access its bloc
-  void onPressed() => bloc.onPressed();
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text("You're on the Second Page"),
-              const Text('You have pushed the button this many times:'),
-              Text(
-                '${bloc.data}',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: bloc.onPressed,
-          child: const Icon(Icons.add),
-        ),
-        persistentFooterButtons: <Widget>[
-          ElevatedButton(
-            onPressed: homeState?.onPressed,
-            child: const Text('Home Page Counter'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Home Page',
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                      builder: (BuildContext context) => const _ThirdPage()));
-            },
-            child: const Text(
-              'Third Page',
-            ),
-          ),
-        ],
+  Widget build(BuildContext context) => buildPage2(
+        count: count,
+        counter: widget.onPressed,
+        page1counter: () {
+          const Page1().onPressed();
+        },
       );
 }
 
-class _ThirdPage extends StatefulWidget {
-  const _ThirdPage({Key? key}) : super(key: key);
+/// The third page displayed in this app.
+class Page3 extends StatefulWidget {
+  const Page3({Key? key}) : super(key: key);
 
   @override
-  _ThirdPageState createState() => _ThirdPageState();
+  State createState() => _Page3State();
+
+  void onPressed() {
+    //
+    /// Retrieve the appropriate State object
+    _Page3State? state;
+
+    /// You'll find these three return null if called by Page3().onPressed()
+    state = this.stateAs<_Page3State>();
+    state = this.state as _Page3State?;
+    state = StateSet.stateIn(this) as _Page3State?;
+
+    state = StateSet.stateOf<Page3>() as _Page3State?;
+    state = StateSet.of<Page3, _Page3State>();
+    state = StateSet.to<_Page3State>();
+
+    state?.count++;
+
+    /// Call the State object's setState() function
+    StateSet.setStateOf(this, () {});
+    this.setState(() {});
+    StateSet.refreshState(this);
+    this.refresh();
+    this.rebuild();
+    this.notifyListeners();
+    StateSet.rebuildState(this);
+    // ignore: invalid_use_of_protected_member
+    state?.setState(() {});
+  }
 }
 
 /// Demonstrates accessing the 'first' SetState object.
-class _ThirdPageState extends State<_ThirdPage> with StateSet {
-  /// Again, at the point, State object, _SecondPageState, is available.
-  _ThirdPageState()
-      : secondState = StateSet.to<_SecondPageState>(),
-        super() {
-    /// The State object, _ThirdPageState, is not instantiated just yet, but you've the type.
-    bloc = _ThirdPageBloc<_ThirdPageState>();
-    // Retrieve a specified State object.
-    homeState = StateSet.to<_MyHomePageState>();
-    // Retrieve the very 'first' State object!
-    appState = StateSet.root;
-  }
-  _SecondPageState? secondState;
-  late _ThirdPageBloc bloc;
-  _MyHomePageState? homeState;
-  StateSet? appState;
+class _Page3State extends State<Page3> with StateSet {
+  //
+  int count = 0;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) => buildPage3(
+        count: count,
+        newKey: () {
+          final firstState = StateSet.root;
+          firstState?.setState(() {});
+        },
+        counter: widget.onPressed,
+        page1counter: () {
+          const Page1().onPressed();
+        },
+        page2counter: () {
+          const Page2().onPressed();
+        },
+      );
+}
 
-    /// This BLoC has a getter to retrieve the State object when needed (and likely available).
-    // /// Supply the State object to the BLoC
-    // bloc.initState();
-  }
+Widget buildPage1({
+  int count = 0,
+  required void Function() counter,
+}) =>
+    BuildPage(
+      label: '1',
+      count: count,
+      counter: counter,
+      row: (BuildContext context) => [
+        Container(),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => const Page2(),
+              ),
+            );
+          },
+          child: const Text(
+            'Page 2',
+          ),
+        ),
+      ],
+    );
 
-  @override
-  void dispose() {
-    // You should clean up after yourself.
-    bloc.dispose();
-    secondState = null;
-    homeState = null;
-    super.dispose();
-  }
+Widget buildPage2({
+  int count = 0,
+  required void Function() counter,
+  required void Function() page1counter,
+}) =>
+    BuildPage(
+      label: '2',
+      count: count,
+      counter: counter,
+      row: (BuildContext context) => [
+        ElevatedButton(
+          style: flatButtonStyle,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'Page 1',
+          ),
+        ),
+        ElevatedButton(
+          style: flatButtonStyle,
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                    builder: (BuildContext context) => const Page3()));
+          },
+          child: const Text(
+            'Page 3',
+          ),
+        ),
+      ],
+      persistentFooterButtons: <Widget>[
+        ElevatedButton(
+          style: flatButtonStyle,
+          onPressed: page1counter,
+          child: const Text('Page 1 Counter'),
+        ),
+      ],
+    );
 
-  // Supply a means to externally access this State objects functionality.
-  void onPressed() => bloc.onPressed();
+Widget buildPage3({
+  int count = 0,
+  required void Function() counter,
+  required void Function() newKey,
+  required void Function() page1counter,
+  required void Function() page2counter,
+}) =>
+    BuildPage(
+      label: '3',
+      count: count,
+      counter: counter,
+      column: (BuildContext context) => [
+        ElevatedButton(
+          onPressed: newKey,
+          child: const Text('New Key for Page 1'),
+        ),
+      ],
+      row: (BuildContext context) => [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context)..pop()..pop();
+          },
+          child: const Text('Page 1'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Page 2'),
+        ),
+      ],
+      persistentFooterButtons: <Widget>[
+        ElevatedButton(
+          onPressed: page1counter,
+          child: const Text('Page 1 Counter'),
+        ),
+        ElevatedButton(
+          onPressed: page2counter,
+          child: const Text('Page 2 Counter'),
+        ),
+      ],
+    );
+
+///
+///
+/// Standard Counter Screen
+///
+///
+///
+class BuildPage extends StatelessWidget {
+  const BuildPage({
+    Key? key,
+    required this.label,
+    required this.count,
+    required this.counter,
+    this.column,
+    required this.row,
+    this.persistentFooterButtons,
+  }) : super(key: key);
+
+  final String label;
+  final int count;
+  final void Function() counter;
+  final List<Widget> Function(BuildContext context)? column;
+  final List<Widget> Function(BuildContext context) row;
+  final List<Widget>? persistentFooterButtons;
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('StateSet Mixin Example'),
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text("You're on the Third page."),
-              const Text('You have pushed the button this many times:'),
-              Text(
-                '${bloc.data}',
-                style: Theme.of(context).textTheme.headline4,
+              Column(children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.only(top: 100),
+                  child: Text("You're on page:"),
+                ),
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 48),
+                ),
+              ]),
+              Column(children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.only(top: 100),
+                  child: Text(
+                    'You have pushed the button this many times:',
+                  ),
+                ),
+                Text(
+                  '$count',
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              ]),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 100),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: row(context),
+                ),
               ),
+              if (column == null)
+                Container()
+              else
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: column!(context),
+                ),
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: onPressed,
+          onPressed: counter,
           child: const Icon(Icons.add),
         ),
-        persistentFooterButtons: <Widget>[
-          ElevatedButton(
-            onPressed: homeState?.onPressed,
-            child: const Text('Home Page Counter'),
-          ),
-          ElevatedButton(
-            onPressed: secondState?.onPressed,
-            child: const Text('Second Page Counter'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              appState?.setState(() {});
-            },
-            child: const Text('Home Page New Key'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName('/'));
-            },
-            child: const Text('Home Page'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Second Page'),
-          ),
-        ],
+        persistentFooterButtons: persistentFooterButtons,
       );
 }
 
-class _SecondPageBloc<T extends State> extends _CounterBloc<T> {
-  /// Demonstrating how to extend the class, _CounterBloc
-}
-
-/// Retain a State object by knowing the type you're looking for.
-class _ThirdPageBloc<T extends State> extends _CounterBloc<T> {
-  /// POWERFUL: You can override the class field with a getter.
-  /// As a getter, you don't have to instantiate until needed (and available).
-  @override
-  T? get state => StateSet.to<T>();
-}
-
-class _CounterBloc<T extends State> extends StateBLoC<T> {
-  /// The 'data' is a lone integer.
-  int _counter = 0;
-
-  /// Getter to safely access the data.
-  int get data => _counter;
-
-  void onPressed() => setState(() {
-        _counter++;
-      });
-}
+final ButtonStyle flatButtonStyle = TextButton.styleFrom(
+  minimumSize: const Size(88, 36),
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(2)),
+  ),
+);

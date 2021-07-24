@@ -1,4 +1,8 @@
 
+## 3.1.0
+ July 16, 2021
+- Retrieve State object used by the specified StatefulWidget object
+
 ## 3.0.1
  June 23, 2021
 - Deprecated StateSetWidget. Proven insufficient.

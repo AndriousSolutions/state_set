@@ -8,7 +8,7 @@ In most cases, always go up to the '**major**' semantic version number. In your 
 dependencies:
  set_state: ^ 3.0.0
 ```
-This package has extensive documentation in the free medium article, [A Mixin For State Objects](https://andrious.medium.com/a-stateset-class-part-1-2891f1a0eea1):
+This package has extensive documentation in the free medium article, [Mixin' State Objects Part 1](https://andrious.medium.com/a-stateset-class-part-1-2891f1a0eea1):
 [![](https://cdn-images-1.medium.com/max/2000/0*3b5Fx1sGkpz7NUuK.png)](https://andrious.medium.com/a-stateset-class-part-1-2891f1a0eea1)
 The screenshot below one of the State classes that make up this example app. It reveals how a State object is incorporated into the StateSet class for ready access. All it takes is to apply the mixin, *StateSet*.
 ![](https://cdn-images-1.medium.com/max/1000/1*HE9Uaq3aE8c6PqtkQ5-eEA.png)

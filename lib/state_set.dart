@@ -34,8 +34,21 @@ extension StateMapStatefulWidgetExtension on StatefulWidget {
     return state;
   }
 
-  State? get state => StateSet.stateIn(this);
+  /// Retrieve a State object from a StatefulWidget of this type.
+  /// Not nessecarily this one.
+  StateSet? stateOf() => StateSet._stateOf(this);
 
+  /// Call setState() function from a StatefulWidget of this type.
+  bool setStateOf(VoidCallback fn) {
+    final state = StateSet._stateOf(this);
+    state?.setState(fn);
+    return state != null;
+  }
+
+  /// Return the State object from this particular StatefulWidget.
+  StateSet? get state => StateSet.stateIn(this);
+
+  /// Call the setState() function from this particular StatefulWidget.
   bool setState(VoidCallback fn) => StateSet.setStateOf(this, fn);
 
   bool refresh() => StateSet.refreshState(this);
@@ -118,6 +131,20 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// Returns null if not found
   static StateSet? stateOf<T extends StatefulWidget>() {
     final stateType = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
+    StateSet? state;
+    if (_setStates.isEmpty || stateType == null) {
+      state = null;
+    } else {
+      state = _setStates[stateType];
+    }
+    return state;
+  }
+
+  /// Retrieve the State object of a type of StatefulWidget
+  /// Not necessary the StatefulWidget that call this function.
+  static StateSet? _stateOf(StatefulWidget widget) {
+    final stateType =
+        _stateWidgets.isEmpty ? null : _stateWidgets[widget.runtimeType];
     StateSet? state;
     if (_setStates.isEmpty || stateType == null) {
       state = null;

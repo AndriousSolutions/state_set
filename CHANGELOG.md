@@ -1,4 +1,8 @@
 
+## 3.2.0
+ July 29, 2021
+- StateSet? stateOf(); bool setStateOf(VoidCallback fn) for extension on StatefulWidget
+
 ## 3.1.0
  July 16, 2021
 - Retrieve State object used by the specified StatefulWidget object

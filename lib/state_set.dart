@@ -26,8 +26,8 @@ extension StateMapStatefulWidgetExtension on StatefulWidget {
   T? stateAs<T extends State>() {
     T? state;
     try {
-      // Try in case its a bad cast
-      state = StateSet.stateIn(this) as T;
+      final obj = StateSet.stateIn(this);
+      state = obj as T;
     } catch (e) {
       state = null;
     }
@@ -35,12 +35,12 @@ extension StateMapStatefulWidgetExtension on StatefulWidget {
   }
 
   /// Retrieve a State object from a StatefulWidget of this type.
-  /// Not nessecarily this one.
-  StateSet? stateOf() => StateSet._stateOf(this);
+  StateSet? stateOf() => StateSet.stateIn(this);
 
   /// Call setState() function from a StatefulWidget of this type.
   bool setStateOf(VoidCallback fn) {
-    final state = StateSet._stateOf(this);
+    final state = StateSet.stateIn(this);
+    // ignore: invalid_use_of_protected_member
     state?.setState(fn);
     return state != null;
   }
@@ -65,24 +65,25 @@ extension StateMapStateExtension on State {
 
 /// Manages the collection of State objects extended by the SetState class
 mixin StateSet<T extends StatefulWidget> on State<T> {
+  //
   /// The static map of StateSet objects by Type.
   static final Map<Type, StateSet> _setStates = {};
 
   /// The static map of StatefulWidget objects.
-  static final Map<Type, Type> _stateWidgets = {};
+  static final Map<Type, StateSet> _stateWidgets = {};
 
   /// The static map of StateSet objects by StatefulWidget.
   static final Map<StatefulWidget, StateSet> _statefulStates = {};
 
-  /// Adds State object to a static map
   /// Adds StatefulWidget to a static map
   /// add this function to the State object's initState() function.
+  /// Adds State object to a static map
   @override
   void initState() {
     super.initState();
-    _setStates.addAll({runtimeType: this});
-    _stateWidgets.addAll({widget.runtimeType: runtimeType});
+    _stateWidgets.addAll({widget.runtimeType: this});
     _statefulStates[widget] = this;
+    _setStates.addAll({runtimeType: this});
   }
 
   /// Switch out the old StatefulWidget object with the new one.
@@ -107,88 +108,74 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   }
 
   /// Override this function instead of the build() function to make this the 'root' State.
-  Widget builder(BuildContext context) => Container();
+  Widget builder(BuildContext context) => const SizedBox();
+
+  /// In case there is a 'hot reload' for example and the State object is re-created.
+  @override
+  void deactivate() {
+    _removeThisState();
+    super.deactivate();
+  }
 
   /// Remove objects from the static Maps if not already removed.
-  /// add this function to the State object's dispose function instead
+  /// add this function to the State object's dispose function
   @override
   void dispose() {
-    // Sometimes a new State object was already created before
-    // the old one was disposed.
-    var remove = _setStates[runtimeType] == this;
-    if (remove) {
-      final state = _setStates.remove(runtimeType);
-      remove = state != null;
-      if (remove) {
-        _stateWidgets.remove(state.widget.runtimeType);
-      }
-    }
-    _statefulStates.removeWhere((key, value) => value == this);
+    _removeThisState();
     super.dispose();
+  }
+
+  /// Remove the 'current' State entry from the static objects
+  void _removeThisState() {
+    _stateWidgets.remove(widget.runtimeType);
+    _statefulStates.removeWhere((key, value) => value == this);
+    _setStates.removeWhere((key, value) => value == this);
   }
 
   /// Retrieve the State object by its StatefulWidget
   /// Returns null if not found
-  static StateSet? stateOf<T extends StatefulWidget>() {
-    final stateType = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
-    StateSet? state;
-    if (_setStates.isEmpty || stateType == null) {
-      state = null;
-    } else {
-      state = _setStates[stateType];
-    }
-    return state;
-  }
-
-  /// Retrieve the State object of a type of StatefulWidget
-  /// Not necessary the StatefulWidget that call this function.
-  static StateSet? _stateOf(StatefulWidget widget) {
-    final stateType =
-        _stateWidgets.isEmpty ? null : _stateWidgets[widget.runtimeType];
-    StateSet? state;
-    if (_setStates.isEmpty || stateType == null) {
-      state = null;
-    } else {
-      state = _setStates[stateType];
-    }
-    return state;
-  }
+  static StateSet? stateOf<T extends StatefulWidget>() =>
+      _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
 
   /// Retrieve the type of State object by its StatefulWidget
   /// Returns null if not found
   static U? of<T extends StatefulWidget, U extends State>() {
-    final stateType = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
-    StateSet? state;
-    if (_setStates.isEmpty || stateType == null) {
-      state = null;
-    } else {
-      state = _setStates[stateType];
+    final state = _stateWidgets.isEmpty ? null : _stateWidgets[_type<T>()];
+    U? result;
+    if (state != null) {
+      try {
+        result = state as U;
+      } catch (_) {
+        result = null;
+      }
     }
-    // ignore: avoid_as
-    return state == null ? null : state as U;
+    return result;
   }
 
   /// Retrieve the State object by type
   /// Returns null if not found
+  /// Note: If there's multiple State objects of the same type,
+  /// will return the 'last' state object added to the Map, _setStates"
   static T? to<T extends State>() {
-    StateSet? state;
-    if (_setStates.isEmpty) {
-      state = null;
-    } else {
-      state = _setStates[_type<T>()];
+    final state = _setStates.isEmpty ? null : _setStates[_type<T>()];
+    T? result;
+    if (state != null) {
+      try {
+        result = state as T;
+      } catch (_) {
+        result = null;
+      }
     }
-    // ignore: avoid_as
-    return state == null ? null : state as T;
+    return result;
   }
 
   /// Retrieve the first StateSet object
   static StateSet? get root =>
-      // ignore: avoid_as
-      _setStates.isEmpty ? null : _setStates.values.first;
+      _stateWidgets.isEmpty ? null : _stateWidgets.values.first;
 
   /// Retrieve the latest context (i.e. the last State object's context)
   static BuildContext? get lastContext =>
-      _setStates.isEmpty ? null : _setStates.values.last.context;
+      _stateWidgets.isEmpty ? null : _stateWidgets.values.last.context;
 
   /// Return the specified type from this function.
   static Type _type<T>() => T;

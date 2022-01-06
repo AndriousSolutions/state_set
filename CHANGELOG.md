@@ -1,4 +1,13 @@
 
+## 3.3.0
+ January 06, 2022
+- Changed  Map<Type, Type> _stateWidgets to Map<Type, StateSet> _stateWidgets
+- _stateWidgets.isEmpty ? null : _stateWidgets.value
+- StateSet._stateOf(this); to StateSet.stateIn(this);
+- void deactivate() { /// In case of 'hot reload' and State object is re-created.
+- Introduced example app
+- sdk: ">=2.15.0 <3.0.0"
+
 ## 3.2.0
  July 29, 2021
 - StateSet? stateOf(); bool setStateOf(VoidCallback fn) for extension on StatefulWidget

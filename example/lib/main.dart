@@ -42,10 +42,9 @@ class Page1 extends StatefulWidget {
 
   void onPressed() {
     /// You'll find these three return null if called by Page1().onPressed()
-    var state = this.stateAs<_Page1State>();
+    var state = stateAs<_Page1State>();
     state = this.state as _Page1State?;
     state = StateSet.stateIn(this) as _Page1State?;
-
     state = StateSet.stateOf<Page1>() as _Page1State?;
     state = StateSet.of<Page1, _Page1State>();
     state = StateSet.to<_Page1State>();
@@ -77,7 +76,7 @@ class Page2 extends StatefulWidget {
 
   void onPressed() {
     /// You'll find these three return null if called by Page2().onPressed()
-    var state = this.stateAs<_Page2State>();
+    var state = stateAs<_Page2State>();
     state = this.state as _Page2State?;
     state = StateSet.stateIn(this) as _Page2State?;
 
@@ -119,7 +118,7 @@ class Page3 extends StatefulWidget {
     _Page3State? state;
 
     /// You'll find these three return null if called by Page3().onPressed()
-    state = this.stateAs<_Page3State>();
+    state = stateAs<_Page3State>();
     state = this.state as _Page3State?;
     state = StateSet.stateIn(this) as _Page3State?;
 
@@ -131,11 +130,11 @@ class Page3 extends StatefulWidget {
 
     /// Call the State object's setState() function
     StateSet.setStateOf(this, () {});
-    this.setState(() {});
+    setState(() {});
     StateSet.refreshState(this);
-    this.refresh();
-    this.rebuild();
-    this.notifyListeners();
+    refresh();
+    rebuild();
+    notifyListeners();
     StateSet.rebuildState(this);
     // ignore: invalid_use_of_protected_member
     state?.setState(() {});
@@ -251,7 +250,9 @@ Widget buildPage3({
       row: (BuildContext context) => [
         ElevatedButton(
           onPressed: () {
-            Navigator.of(context)..pop()..pop();
+            Navigator.of(context)
+              ..pop()
+              ..pop();
           },
           child: const Text('Page 1'),
         ),

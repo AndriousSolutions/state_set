@@ -81,9 +81,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    _stateWidgets.addAll({widget.runtimeType: this});
-    _statefulStates[widget] = this;
-    _setStates.addAll({runtimeType: this});
+    _addThisState();
   }
 
   /// Switch out the old StatefulWidget object with the new one.
@@ -110,6 +108,13 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// Override this function instead of the build() function to make this the 'root' State.
   Widget builder(BuildContext context) => const SizedBox();
 
+  /// In case the State object is reinserted in the Widget tree.
+  @override
+  void activate() {
+    super.activate();
+    _addThisState();
+  }
+
   /// In case there is a 'hot reload' for example and the State object is re-created.
   @override
   void deactivate() {
@@ -123,6 +128,13 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   void dispose() {
     _removeThisState();
     super.dispose();
+  }
+
+  /// Add the 'current' State entry to the static objects
+  void _addThisState() {
+    _stateWidgets.addAll({widget.runtimeType: this});
+    _statefulStates[widget] = this;
+    _setStates.addAll({runtimeType: this});
   }
 
   /// Remove the 'current' State entry from the static objects

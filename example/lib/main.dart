@@ -12,25 +12,17 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> with StateSet {
-  /// Key identifies the widget. New key? New widget!
-  /// Demonstrates how to explicitly 're-create' a State object
-  Key _homeKey = UniqueKey();
-
   @override
   Widget build(BuildContext context) => MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: Page1(key: _homeKey),
-      );
 
-  @override
-  void setState(VoidCallback fn) {
-    /// Key identifies the widget. New key? New widget!
-    _homeKey = UniqueKey();
-    super.setState(fn);
-  }
+        /// Key identifies the widget. New key? New widget!
+        /// Demonstrates how to explicitly 're-create' a State object
+        home: Page1(key: UniqueKey()),
+      );
 }
 
 /// The first page displayed in this app.
@@ -59,6 +51,14 @@ class Page1 extends StatefulWidget {
 class _Page1State extends State<Page1> with StateSet {
   //
   int count = 0;
+
+  @override
+  void initState() {
+    // Place a breakpoint here and you'll find this
+    // function will run again with the button, New Key for Page 1,
+    // is pressed. The State objet is re-created.
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext _) => buildPage1(

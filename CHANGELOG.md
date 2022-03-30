@@ -1,4 +1,9 @@
 
+## 3.3.1
+ March 30, 2022
+- Implement void activate() with _addThisState();
+- sdk: ">=2.16.1 <3.0.0"
+
 ## 3.3.0
  January 06, 2022
 - Changed  Map<Type, Type> _stateWidgets to Map<Type, StateSet> _stateWidgets

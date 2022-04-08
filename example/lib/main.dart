@@ -48,10 +48,7 @@ class Page1 extends StatefulWidget {
   }
 }
 
-class _Page1State extends State<Page1> with StateSet {
-  //
-  int count = 0;
-
+class _Page1State extends _PageState<Page1> {
   @override
   void initState() {
     // Place a breakpoint here and you'll find this
@@ -61,7 +58,7 @@ class _Page1State extends State<Page1> with StateSet {
   }
 
   @override
-  Widget build(BuildContext _) => buildPage1(
+  Widget build(BuildContext context) => buildPage1(
         count: count,
         counter: widget.onPressed,
       );
@@ -79,7 +76,6 @@ class Page2 extends StatefulWidget {
     var state = stateAs<_Page2State>();
     state = this.state as _Page2State?;
     state = StateSet.stateIn(this) as _Page2State?;
-
     state = StateSet.stateOf<Page2>() as _Page2State?;
     state = StateSet.of<Page2, _Page2State>();
     state = StateSet.to<_Page2State>();
@@ -91,10 +87,8 @@ class Page2 extends StatefulWidget {
   }
 }
 
-class _Page2State extends State<Page2> with StateSet {
+class _Page2State extends _PageState<Page2> {
   //
-  int count = 0;
-
   @override
   Widget build(BuildContext context) => buildPage2(
         count: count,
@@ -142,10 +136,8 @@ class Page3 extends StatefulWidget {
 }
 
 /// Demonstrates accessing the 'first' SetState object.
-class _Page3State extends State<Page3> with StateSet {
+class _Page3State extends _PageState<Page3> {
   //
-  int count = 0;
-
   @override
   Widget build(BuildContext context) => buildPage3(
         count: count,
@@ -172,7 +164,7 @@ Widget buildPage1({
       count: count,
       counter: counter,
       row: (BuildContext context) => [
-        Container(),
+        const SizedBox(),
         ElevatedButton(
           onPressed: () {
             Navigator.push(
@@ -212,9 +204,11 @@ Widget buildPage2({
           style: flatButtonStyle,
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                    builder: (BuildContext context) => const Page3()));
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => const Page3(),
+              ),
+            );
           },
           child: const Text(
             'Page 3',
@@ -338,7 +332,7 @@ class BuildPage extends StatelessWidget {
                 ),
               ),
               if (column == null)
-                Container()
+                const SizedBox()
               else
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -362,3 +356,13 @@ final ButtonStyle flatButtonStyle = TextButton.styleFrom(
     borderRadius: BorderRadius.all(Radius.circular(2)),
   ),
 );
+
+/// This class contains a counter.
+abstract class _PageState<T extends StatefulWidget> extends State<T>
+    with StateSet {
+  // The common counter variable on all the 'Page' State objects.
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context);
+}

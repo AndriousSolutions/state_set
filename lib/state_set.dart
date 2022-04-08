@@ -58,7 +58,7 @@ extension StateMapStatefulWidgetExtension on StatefulWidget {
   bool notifyListeners() => refresh();
 }
 
-/// Does this work?
+//todo: Does this work?
 extension StateMapStateExtension on State {
   static State? of(StatefulWidget widget) => StateSet.stateIn(widget);
 }
@@ -91,22 +91,6 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
     _statefulStates.removeWhere((key, value) => key == oldWidget);
     _statefulStates[widget] = this;
   }
-
-  static Widget? _childStateSet;
-
-  /// Builds a [InheritedWidget].
-  ///
-  /// Passed an already created widget tree
-  /// so its setState() call will **only** rebuild
-  /// [InheritedWidget] and consequently any of its dependents,
-  @override
-  Widget build(BuildContext context) {
-    _childStateSet ??= builder(context);
-    return _SetStateInheritedWidget(child: _childStateSet!);
-  }
-
-  /// Override this function instead of the build() function to make this the 'root' State.
-  Widget builder(BuildContext context) => const SizedBox();
 
   /// In case the State object is reinserted in the Widget tree.
   @override
@@ -143,6 +127,9 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
     _statefulStates.removeWhere((key, value) => value == this);
     _setStates.removeWhere((key, value) => value == this);
   }
+
+  /// 'Refresh' the widget tree
+  void refresh() => setState(() {});
 
   /// Retrieve the State object by its StatefulWidget
   /// Returns null if not found
@@ -227,43 +214,6 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   /// Call setState() from the State object from the specified StatefulWidget
   /// Return true if successful
   static bool rebuildState(StatefulWidget? widget) => setStateOf(widget, () {});
-
-  /// Rebuilds the widget that calls this function
-  /// by calling setState() function of the 'root' StatSet State object.
-  bool attachStateSet(BuildContext context) {
-    assert(_childStateSet != null,
-        'attachStateSet(): Define a builder() function instead of build() function.');
-    final widget =
-        context.dependOnInheritedWidgetOfExactType<_SetStateInheritedWidget>();
-    return widget != null;
-  }
-
-  /// Adhered to the Bloc syntax
-  static void notifyListeners() => rebuild();
-
-  /// Flutter framework function name.
-  static void notifyClients() => rebuild();
-
-  /// 'Refresh' the widget tree
-  static void refresh() => rebuild();
-
-  /// Rebuild widget tree using the 'first' StateSet State objects.
-  static void rebuild() {
-    assert(_childStateSet != null,
-        'rebuild(): Define builder() instead of build() function.');
-    return root?.setState(() {});
-  }
-}
-
-/// Provides the InheritedWidget
-class _SetStateInheritedWidget extends InheritedWidget {
-  const _SetStateInheritedWidget({Key? key, required Widget child})
-      : super(key: key, child: child);
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return oldWidget != this;
-  }
 }
 
 /// Implement so to serve as a Business Logic Component for a SetState object.

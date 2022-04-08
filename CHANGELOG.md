@@ -1,4 +1,11 @@
 
+## 3.4.0
+ April 04, 2022
+- Removed ill-conceived InheritedWidget implementation.
+- Removed unnecessary functions, builder() and attachStateSet()
+- Removed confusing functions, rebuild(), notifyClients(), notifyListeners()
+- sdk: ">=2.16.2 <3.0.0"
+
 ## 3.3.1
  March 30, 2022
 - Implement void activate() with _addThisState();

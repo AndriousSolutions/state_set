@@ -1,6 +1,6 @@
 name: state_set
 description: Collects State Objects by type into a Map object for realiable access across the app.
-version: 3.4.0
+version: 3.5.0
 homepage: https://github.com/AndriousSolutions/state_set
 repository: https://github.com/AndriousSolutions/state_set
 

@@ -1,4 +1,8 @@
 
+## 3.5.0
+ May 13, 2022
+- class InheritedWrap for targeted and independent rebuilds 
+
 ## 3.4.0
  April 04, 2022
 - Removed ill-conceived InheritedWidget implementation.

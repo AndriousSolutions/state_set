@@ -33,18 +33,40 @@ class Page1 extends StatefulWidget {
   State createState() => _Page1State();
 
   void onPressed() {
-    /// You'll find these three return null if called by Page1().onPressed()
-    var state = stateAs<_Page1State>();
+    //
+    _Page1State? state = stateAs<_Page1State>();
+
+    /// Notice casting is necessary to call the unique property, count.
     state = this.state as _Page1State?;
     state = StateSet.stateIn(this) as _Page1State?;
     state = StateSet.stateOf<Page1>() as _Page1State?;
     state = StateSet.of<Page1, _Page1State>();
     state = StateSet.to<_Page1State>();
+    // This setState() function is defined below.
+    setState(() => state!.count++);
+  }
+
+  void setState(VoidCallback fn) {
+    //
+    State? state;
+
+    /// Notice casting is not necessary when call a State's setState() function.
+    state = this.state; // uses StateSet.stateIn(this);
+    state = StateSet.stateIn(this); // uses _statefulStates[widget];
+    state = StateSet.stateOf<Page1>(); // uses  _stateWidgets[_type<T>()];
+    state =
+        StateSet.of<Page1, _Page1State>(); // uses _stateWidgets[_type<T>()];
+    state = StateSet.to<_Page1State>(); // uses _setStates[_type<T>()];
 
     // ignore: invalid_use_of_protected_member
-    state?.setState(() {
-      state!.count++;
-    });
+    state?.setState(fn);
+  }
+
+  void refresh() {
+    final specificState =
+        stateAs<_Page1State>(); // uses StateSet.stateIn(this);
+    // ignore: invalid_use_of_protected_member
+    specificState?.setState(() {});
   }
 }
 
@@ -72,7 +94,7 @@ class Page2 extends StatefulWidget {
   State createState() => _Page2State();
 
   void onPressed() {
-    /// You'll find these three return null if called by Page2().onPressed()
+    /// Cast to the appropriate State class to increment the count.
     var state = stateAs<_Page2State>();
     state = this.state as _Page2State?;
     state = StateSet.stateIn(this) as _Page2State?;
@@ -82,6 +104,7 @@ class Page2 extends StatefulWidget {
 
     state?.count++;
 
+    /// You can call this variable's setState() function. Ignore the warning below.
     // ignore: invalid_use_of_protected_member
     state?.setState(() {});
   }
@@ -94,6 +117,7 @@ class _Page2State extends _PageState<Page2> {
         count: count,
         counter: widget.onPressed,
         page1counter: () {
+          /// StatefulWidget is const and so is not created again. Brilliant!
           const Page1().onPressed();
         },
       );
@@ -111,25 +135,31 @@ class Page3 extends StatefulWidget {
     /// Retrieve the appropriate State object
     _Page3State? state;
 
-    /// You'll find these three return null if called by Page3().onPressed()
-    state = stateAs<_Page3State>();
-    state = this.state as _Page3State?;
-    state = StateSet.stateIn(this) as _Page3State?;
+    state = stateAs<_Page3State>(); // uses StateSet.stateIn(this);
+    state = this.state as _Page3State?; // uses StateSet.stateIn(this);
+    state =
+        StateSet.stateIn(this) as _Page3State?; // uses _statefulStates[widget];
 
-    state = StateSet.stateOf<Page3>() as _Page3State?;
-    state = StateSet.of<Page3, _Page3State>();
-    state = StateSet.to<_Page3State>();
+    state = StateSet.stateOf<Page3>()
+        as _Page3State?; // uses _stateWidgets[_type<T>()];
+    state =
+        StateSet.of<Page3, _Page3State>(); // uses _stateWidgets[_type<T>()];
+    state = StateSet.to<_Page3State>(); // uses _setStates[_type<T>()];
 
     state?.count++;
 
     /// Call the State object's setState() function
     StateSet.setStateOf(this, () {});
+    // in the extension StateMapStatefulWidgetExtension on StatefulWidget
     setState(() {});
-    StateSet.refreshState(this);
+    StateSet.refreshState(this); // uses setStateOf(widget, () {});
+    // in the extension StateMapStatefulWidgetExtension on StatefulWidget
     refresh();
+    // in the extension StateMapStatefulWidgetExtension on StatefulWidget
     rebuild();
+    // in the extension StateMapStatefulWidgetExtension on StatefulWidget
     notifyListeners();
-    StateSet.rebuildState(this);
+    StateSet.rebuildState(this); // uses setStateOf(widget, () {});
     // ignore: invalid_use_of_protected_member
     state?.setState(() {});
   }

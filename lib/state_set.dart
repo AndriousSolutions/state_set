@@ -51,10 +51,13 @@ extension StateMapStatefulWidgetExtension on StatefulWidget {
   /// Call the setState() function from this particular StatefulWidget.
   bool setState(VoidCallback fn) => StateSet.setStateOf(this, fn);
 
+  @Deprecated('Use setState() instead. A recognized Flutter function.')
   bool refresh() => StateSet.refreshState(this);
 
+  @Deprecated('Use setState() instead. A recognized Flutter function.')
   bool rebuild() => refresh();
 
+  @Deprecated('Use setState() instead. A recognized Flutter function.')
   bool notifyListeners() => refresh();
 }
 
@@ -128,7 +131,8 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
     _setStates.removeWhere((key, value) => value == this);
   }
 
-  /// 'Refresh' the widget tree
+  /// 'Refresh' the State object's widget tree
+  @Deprecated('Use setState() instead--a recognized Flutter function.')
   void refresh() => setState(() {});
 
   /// Retrieve the State object by its StatefulWidget
@@ -180,12 +184,14 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
   static Type _type<T>() => T;
 
   /// Return the State object used by the specified StatefulWidget object.
+  /// Usually called in the StatefulWidget passing 'this' as a parameter.
   static StateSet? stateIn(StatefulWidget? widget) =>
       widget == null ? null : _statefulStates[widget];
 
   /// Calls the setState() of the State objet from the specified StatefulWidget
   /// passing the specified function.
-  /// Return true if successful
+  /// Return true if successful.
+  /// Usually called in the StatefulWidget passing 'this' as a parameter.
   static bool setStateOf(StatefulWidget? widget, VoidCallback? fn) {
     bool set;
 
@@ -209,10 +215,12 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
 
   /// Call setState() from the State object from the specified StatefulWidget
   /// Return true if successful
+  /// Usually called in the StatefulWidget passing 'this' as a parameter.
   static bool refreshState(StatefulWidget? widget) => setStateOf(widget, () {});
 
   /// Call setState() from the State object from the specified StatefulWidget
   /// Return true if successful
+  /// Usually called in the StatefulWidget passing 'this' as a parameter.
   static bool rebuildState(StatefulWidget? widget) => setStateOf(widget, () {});
 }
 

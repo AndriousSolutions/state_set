@@ -153,12 +153,6 @@ class Page3 extends StatefulWidget {
     // in the extension StateMapStatefulWidgetExtension on StatefulWidget
     setState(() {});
     StateSet.refreshState(this); // uses setStateOf(widget, () {});
-    // in the extension StateMapStatefulWidgetExtension on StatefulWidget
-    refresh();
-    // in the extension StateMapStatefulWidgetExtension on StatefulWidget
-    rebuild();
-    // in the extension StateMapStatefulWidgetExtension on StatefulWidget
-    notifyListeners();
     StateSet.rebuildState(this); // uses setStateOf(widget, () {});
     // ignore: invalid_use_of_protected_member
     state?.setState(() {});

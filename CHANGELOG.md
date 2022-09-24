@@ -2,7 +2,8 @@
 ## 3.6.0
  September 24, 2022
 - Deprecated 'refresh'. Use setState() instead--a recognized Flutter function.
-
+- Updated example app
+- 
 ## 3.5.0
  May 13, 2022
 - class InheritedWrap for targeted and independent rebuilds 

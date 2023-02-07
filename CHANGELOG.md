@@ -1,8 +1,11 @@
 
-## 3.6.0+06
+## 3.6.0+07
  September 24, 2022
 - Deprecated 'refresh'. Use setState() instead--a recognized Flutter function.
 - Updated example app
+- sdk: ">=2.17.0 <3.0.0"
+- Update analysis_options.yaml
+- Moved to the 2-clause BSD License.
 
 ## 3.5.0
  May 13, 2022

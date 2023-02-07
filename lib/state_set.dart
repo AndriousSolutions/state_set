@@ -21,8 +21,9 @@ library state_set;
 
 import 'package:flutter/material.dart';
 
+/// Supply the StatefulWidget access to its State object and others
 extension StateMapStatefulWidgetExtension on StatefulWidget {
-  //
+  /// Retrieve a particular State class
   T? stateAs<T extends State>() {
     T? state;
     try {
@@ -51,18 +52,23 @@ extension StateMapStatefulWidgetExtension on StatefulWidget {
   /// Call the setState() function from this particular StatefulWidget.
   bool setState(VoidCallback fn) => StateSet.setStateOf(this, fn);
 
+  /// Call the setState() function from this particular StatefulWidget.
   @Deprecated('Use setState() instead. A recognized Flutter function.')
   bool refresh() => StateSet.refreshState(this);
 
+  /// Call the setState() function from this particular StatefulWidget.
   @Deprecated('Use setState() instead. A recognized Flutter function.')
   bool rebuild() => refresh();
 
+  /// Call the setState() function from this particular StatefulWidget.
   @Deprecated('Use setState() instead. A recognized Flutter function.')
   bool notifyListeners() => refresh();
 }
 
 //todo: Does this work?
+/// Access other State object by their StatefulWidget
 extension StateMapStateExtension on State {
+  /// Retrieve a State object by its StatefulWidget
   static State? of(StatefulWidget widget) => StateSet.stateIn(widget);
 }
 
@@ -226,6 +232,7 @@ mixin StateSet<T extends StatefulWidget> on State<T> {
 
 /// Implement so to serve as a Business Logic Component for a SetState object.
 class StateBLoC<T extends State> {
+  /// Collect the designated State object to work with
   StateBLoC() {
     // Note, this is in case State object is available at this time.
     state = StateSet.to<T>();

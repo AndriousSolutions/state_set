@@ -1,6 +1,6 @@
 name: state_set
 description: Collects all the app's State Objects for readily and reliable State Management.
-version: 3.6.0+07
+version: 3.6.0+08
 homepage: https://github.com/AndriousSolutions/state_set
 repository: https://github.com/AndriousSolutions/state_set
 

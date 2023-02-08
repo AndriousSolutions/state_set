@@ -7,6 +7,7 @@
 - Update analysis_options.yaml
 - Moved to the 2-clause BSD License.
 - More public API documentation
+- Implemented widget_test.dart
 
 ## 3.5.0
  May 13, 2022

@@ -16,6 +16,8 @@ description: The example app for the State_Set package.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0
+homepage: https://www.andrioussolutions.com
+repository: https://github.com/AndriousSolutions/state_set/tree/master/example
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -39,6 +41,8 @@ dependencies:
     path: ../
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 

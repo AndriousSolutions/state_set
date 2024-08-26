@@ -4,7 +4,9 @@ import 'package:state_set/state_set.dart';
 
 void main() => runApp(const MainApp());
 
+///
 class MainApp extends StatefulWidget {
+  ///
   const MainApp({Key? key}) : super(key: key);
 
   @override
@@ -19,7 +21,7 @@ class _MainAppState extends State<MainApp> with StateSet {
           primarySwatch: Colors.blue,
         ),
 
-        /// Key identifies the widget. New key? New widget!
+        /// Key identifies the widget. New key? New State object!
         /// Demonstrates how to explicitly 're-create' a State object
         home: Page1(key: UniqueKey()),
       );
@@ -27,30 +29,34 @@ class _MainAppState extends State<MainApp> with StateSet {
 
 /// The first page displayed in this app.
 class Page1 extends StatefulWidget {
+  ///
   const Page1({Key? key}) : super(key: key);
 
   @override
   State createState() => _Page1State();
 
+  ///
   void onPressed() {
     //
     _Page1State? state = stateAs<_Page1State>();
 
-    /// Notice casting is necessary to call the unique property, count.
     state = this.state as _Page1State?;
-    state = StateSet.stateIn(this) as _Page1State?;
-    state = StateSet.stateOf<Page1>() as _Page1State?;
     state = StateSet.of<Page1, _Page1State>();
     state = StateSet.to<_Page1State>();
+
+    /// Notice casting is necessary to call the unique property, count.
+    state = StateSet.stateIn(this) as _Page1State?;
+    state = StateSet.stateOf<Page1>() as _Page1State?;
+
     // This setState() function is defined below.
     setState(() => state!.count++);
   }
 
+  ///
   void setState(VoidCallback fn) {
     //
     State? state;
 
-    /// Notice casting is not necessary when call a State's setState() function.
     state = this.state; // uses StateSet.stateIn(this);
     state = StateSet.stateIn(this); // uses _statefulStates[widget];
     state = StateSet.stateOf<Page1>(); // uses  _stateWidgets[_type<T>()];
@@ -58,10 +64,12 @@ class Page1 extends StatefulWidget {
         StateSet.of<Page1, _Page1State>(); // uses _stateWidgets[_type<T>()];
     state = StateSet.to<_Page1State>(); // uses _setStates[_type<T>()];
 
+    /// Notice casting is not necessary when call a State's setState() function.
     // ignore: invalid_use_of_protected_member
     state?.setState(fn);
   }
 
+  ///
   void refresh() {
     final specificState =
         stateAs<_Page1State>(); // uses StateSet.stateIn(this);
@@ -88,19 +96,22 @@ class _Page1State extends _PageState<Page1> {
 
 /// The second page displayed in this app.
 class Page2 extends StatefulWidget {
+  ///
   const Page2({Key? key}) : super(key: key);
 
   @override
   State createState() => _Page2State();
 
+  ///
   void onPressed() {
-    /// Cast to the appropriate State class to increment the count.
     var state = stateAs<_Page2State>();
     state = this.state as _Page2State?;
-    state = StateSet.stateIn(this) as _Page2State?;
-    state = StateSet.stateOf<Page2>() as _Page2State?;
     state = StateSet.of<Page2, _Page2State>();
     state = StateSet.to<_Page2State>();
+
+    /// Cast to the appropriate State class to increment the count.
+    state = StateSet.stateIn(this) as _Page2State?;
+    state = StateSet.stateOf<Page2>() as _Page2State?;
 
     state?.count++;
 
@@ -125,11 +136,13 @@ class _Page2State extends _PageState<Page2> {
 
 /// The third page displayed in this app.
 class Page3 extends StatefulWidget {
+  ///
   const Page3({Key? key}) : super(key: key);
 
   @override
   State createState() => _Page3State();
 
+  ///
   void onPressed() {
     //
     /// Retrieve the appropriate State object
@@ -152,8 +165,6 @@ class Page3 extends StatefulWidget {
     StateSet.setStateOf(this, () {});
     // in the extension StateMapStatefulWidgetExtension on StatefulWidget
     setState(() {});
-    StateSet.refreshState(this); // uses setStateOf(widget, () {});
-    StateSet.rebuildState(this); // uses setStateOf(widget, () {});
     // ignore: invalid_use_of_protected_member
     state?.setState(() {});
   }
@@ -179,6 +190,7 @@ class _Page3State extends _PageState<Page3> {
       );
 }
 
+///
 Widget buildPage1({
   int count = 0,
   required void Function() counter,
@@ -190,6 +202,7 @@ Widget buildPage1({
       row: (BuildContext context) => [
         const SizedBox(),
         ElevatedButton(
+          key: const Key('Page 2'),
           onPressed: () {
             Navigator.push(
               context,
@@ -198,13 +211,12 @@ Widget buildPage1({
               ),
             );
           },
-          child: const Text(
-            'Page 2',
-          ),
+          child: const Text('Page 2'),
         ),
       ],
     );
 
+///
 Widget buildPage2({
   int count = 0,
   required void Function() counter,
@@ -216,15 +228,15 @@ Widget buildPage2({
       counter: counter,
       row: (BuildContext context) => [
         ElevatedButton(
+          key: const Key('Page 1'),
           style: flatButtonStyle,
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text(
-            'Page 1',
-          ),
+          child: const Text('Page 1'),
         ),
         ElevatedButton(
+          key: const Key('Page 3'),
           style: flatButtonStyle,
           onPressed: () {
             Navigator.push(
@@ -234,13 +246,12 @@ Widget buildPage2({
               ),
             );
           },
-          child: const Text(
-            'Page 3',
-          ),
+          child: const Text('Page 3'),
         ),
       ],
       persistentFooterButtons: <Widget>[
         ElevatedButton(
+          key: const Key('Page 1 Counter'),
           style: flatButtonStyle,
           onPressed: page1counter,
           child: const Text('Page 1 Counter'),
@@ -248,6 +259,7 @@ Widget buildPage2({
       ],
     );
 
+///
 Widget buildPage3({
   int count = 0,
   required void Function() counter,
@@ -261,12 +273,14 @@ Widget buildPage3({
       counter: counter,
       column: (BuildContext context) => [
         ElevatedButton(
+          key: const Key('New Key'),
           onPressed: newKey,
           child: const Text('New Key for Page 1'),
         ),
       ],
       row: (BuildContext context) => [
         ElevatedButton(
+          key: const Key('Page 1'),
           onPressed: () {
             Navigator.of(context)
               ..pop()
@@ -275,6 +289,7 @@ Widget buildPage3({
           child: const Text('Page 1'),
         ),
         ElevatedButton(
+          key: const Key('Page 2'),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -283,10 +298,12 @@ Widget buildPage3({
       ],
       persistentFooterButtons: <Widget>[
         ElevatedButton(
+          key: const Key('Page 1 Counter'),
           onPressed: page1counter,
           child: const Text('Page 1 Counter'),
         ),
         ElevatedButton(
+          key: const Key('Page 2 Counter'),
           onPressed: page2counter,
           child: const Text('Page 2 Counter'),
         ),
@@ -300,6 +317,7 @@ Widget buildPage3({
 ///
 ///
 class BuildPage extends StatelessWidget {
+  ///
   const BuildPage({
     Key? key,
     required this.label,
@@ -310,11 +328,22 @@ class BuildPage extends StatelessWidget {
     this.persistentFooterButtons,
   }) : super(key: key);
 
+  ///
   final String label;
+
+  ///
   final int count;
+
+  ///
   final void Function() counter;
+
+  ///
   final List<Widget> Function(BuildContext context)? column;
+
+  ///
   final List<Widget> Function(BuildContext context) row;
+
+  ///
   final List<Widget>? persistentFooterButtons;
 
   @override
@@ -345,7 +374,7 @@ class BuildPage extends StatelessWidget {
                 ),
                 Text(
                   '$count',
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ]),
               Padding(
@@ -373,6 +402,7 @@ class BuildPage extends StatelessWidget {
       );
 }
 
+///
 final ButtonStyle flatButtonStyle = TextButton.styleFrom(
   minimumSize: const Size(88, 36),
   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -383,7 +413,7 @@ final ButtonStyle flatButtonStyle = TextButton.styleFrom(
 
 /// This class contains a counter.
 abstract class _PageState<T extends StatefulWidget> extends State<T>
-    with StateSet {
+    with StateSet<T> {
   // The common counter variable on all the 'Page' State objects.
   int count = 0;
 

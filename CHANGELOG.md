@@ -1,4 +1,11 @@
 
+## 4.0.0
+ August 24, 2024
+- environment:  sdk: ^3.0.0
+- Remove class InheritedWrap
+- 
+- mixin InheritedWidgetStateMixin on State {
+
 ## 3.6.0+08
  September 24, 2022
 - Deprecated 'refresh'. Use setState() instead--a recognized Flutter function.

@@ -1,10 +1,10 @@
 
-## 4.0.0
+## 4.0.0+1
  August 24, 2024
 - environment:  sdk: ^3.0.0
 - Remove class InheritedWrap
-- 
 - mixin InheritedWidgetStateMixin on State {
+- Removed mustCallSuper from show clause
 
 ## 3.6.0+08
  September 24, 2022

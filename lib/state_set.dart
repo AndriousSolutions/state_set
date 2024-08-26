@@ -27,8 +27,7 @@ import 'package:flutter/foundation.dart'
         Key,
         ValueKey,
         VoidCallback,
-        kDebugMode,
-        mustCallSuper;
+        kDebugMode;
 
 import 'package:flutter/material.dart'
     show
@@ -46,8 +45,7 @@ import 'package:flutter/material.dart'
         ValueKey,
         VoidCallback,
         Widget,
-        WidgetBuilder,
-        mustCallSuper;
+        WidgetBuilder;
 
 /// Supply the StatefulWidget access to its State object and others
 extension StateMapStatefulWidgetExtension on StatefulWidget {
